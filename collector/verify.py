@@ -72,12 +72,16 @@ def country_for(domain: str, cfg: Config) -> str:
     for tld, c in sorted(cfg.tld_country.items(), key=lambda kv: -len(kv[0])):
         if d.endswith(tld):
             return c
-    return "Other"
+    return "Unknown"
 
 
 def _process(row, cfg: Config, matcher: Matcher) -> tuple[str, dict | None, str]:
     url = row["url"]
-    ex, arch, err = _fetch(url, row["wayback_ts"] or "")
+    if "news.google.com" in url:
+        # Undecoded Google News link: the page is only a Google redirect, so judge by headline.
+        ex, arch, err = None, "", "google news link not decoded"
+    else:
+        ex, arch, err = _fetch(url, row["wayback_ts"] or "")
     title = (ex or {}).get("title") or row["hint_title"] or ""
     text = (ex or {}).get("text", "")
     basis = "full-text"

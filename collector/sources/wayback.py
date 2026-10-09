@@ -73,77 +73,83 @@ def _params(job: dict, cfg: Config) -> dict:
     return p
 
 
-def _num_pages(job: dict, cfg: Config) -> int:
-    p = _params(job, cfg)
-    p.pop("output", None)
-    p["showNumPages"] = "true"
-    r = http.get(CDX, params=p, timeout=90, retries=2)
-    if r is None or r.status_code != 200:
-        raise RuntimeError(f"CDX numpages HTTP {getattr(r, 'status_code', None)}")
-    try:
-        return int(r.text.strip())
-    except ValueError:
-        return 1
+PAGE_LIMIT = 3000      # rows per request
+STATE = "wayback_v2"   # v2: resume-key paging (page-number paging returned nothing with filters)
+
+
+def parse_cdx(text: str) -> tuple[list[list[str]], str | None]:
+    """Parse CDX JSON output. With showResumeKey the last rows are [] and [key]."""
+    text = (text or "").strip()
+    if not text:
+        return [], None
+    rows = json.loads(text)
+    if not isinstance(rows, list):
+        return [], None
+    resume = None
+    if len(rows) >= 2 and rows[-2] == [] and isinstance(rows[-1], list) and len(rows[-1]) == 1:
+        resume = rows[-1][0]
+        rows = rows[:-2]
+    if rows and rows[0] == ["timestamp", "original"]:
+        rows = rows[1:]
+    return [r for r in rows if isinstance(r, list) and len(r) >= 2], resume
+
+
+def _bump_count(db: DB, domain: str, n: int) -> None:
+    counts = db.get_state("wayback_counts", {})
+    counts[domain] = counts.get(domain, 0) + n
+    db.set_state("wayback_counts", counts)
 
 
 def step(db: DB, cfg: Config) -> bool:
-    """Process one CDX page. Returns False when every job is finished."""
+    """Fetch the next block of archived URLs. Returns False when every job is finished."""
     jobs = plan(cfg)
-    st = db.get_state("wayback", {"job": 0, "page": 0, "pages": None})
-    # If keywords/domains changed, job list changes; we just continue by index.
+    st = db.get_state(STATE, {"job": 0, "resume": None})
     if st["job"] >= len(jobs):
         return False
     job = jobs[st["job"]]
     try:
-        if st["pages"] is None:
-            st["pages"] = _num_pages(job, cfg)
-            db.set_state("wayback", st)
-        if st["page"] >= st["pages"]:
-            db.set_state("wayback", {"job": st["job"] + 1, "page": 0, "pages": None})
-            return True
-
         p = _params(job, cfg)
-        p["page"] = str(st["page"])
-        r = http.get(CDX, params=p, timeout=120, retries=2)
+        p["limit"] = str(PAGE_LIMIT)
+        p["showResumeKey"] = "true"
+        if st.get("resume"):
+            p["resumeKey"] = st["resume"]
+        r = http.get(CDX, params=p, timeout=150, retries=2)
         if r is None or r.status_code != 200:
             raise RuntimeError(f"CDX HTTP {getattr(r, 'status_code', None)}")
-        text = r.text.strip()
-        rows = json.loads(text) if text else []
+        rows, resume = parse_cdx(r.text)
         cands = []
-        for row in rows[1:] if rows and rows[0] == ["timestamp", "original"] else rows:
-            ts, url = row[0], row[1]
+        for ts, url, *_ in rows:
             if SKIP_EXT.search(url) or SKIP_PATH.search(url):
                 continue
             url = url.replace("http://", "https://", 1) if url.startswith("http://") else url
             cands.append({"url": url, "collector": f"wayback:{job['domain']}",
                           "date": date_from_url(url) or "", "wayback_ts": ts})
         added = db.add_candidates(cands)
-        log.info("wayback %s batch %d page %d/%d: %d urls, %d new",
-                 job["domain"], job["batch"], st["page"] + 1, st["pages"], len(cands), added)
-        st["page"] += 1
-        st.pop("errors", None)
-        db.set_state("wayback", st)
-    except Exception as e:  # network trouble: retry this page a few times, then skip it
+        _bump_count(db, job["domain"], len(cands))
+        log.info("wayback %s batch %d: %d urls, %d new%s", job["domain"], job["batch"],
+                 len(cands), added, " (more)" if resume else "")
+        st = ({"job": st["job"], "resume": resume} if resume
+              else {"job": st["job"] + 1, "resume": None})
+    except Exception as e:  # network trouble: retry a few times, then skip this job
         st["errors"] = st.get("errors", 0) + 1
-        log.warning("wayback %s page %s error (%d): %s", job["domain"], st["page"], st["errors"], e)
+        log.warning("wayback %s error (%d): %s", job["domain"], st["errors"], e)
         if st["errors"] >= 3:
             skipped = db.get_state("wayback_skipped", [])
-            skipped.append({"domain": job["domain"], "batch": job["batch"], "page": st["page"]})
+            skipped.append({"domain": job["domain"], "batch": job["batch"], "error": str(e)[:120]})
             db.set_state("wayback_skipped", skipped)
-            st["errors"] = 0
-            if st["pages"] is None:
-                st = {"job": st["job"] + 1, "page": 0, "pages": None}
-            else:
-                st["page"] += 1
-        db.set_state("wayback", st)
+            st = {"job": st["job"] + 1, "resume": None}
         time.sleep(5)
+    db.set_state(STATE, st)
     return True
 
 
 def progress(db: DB, cfg: Config) -> str:
     jobs = plan(cfg)
-    st = db.get_state("wayback", {"job": 0, "page": 0, "pages": None})
-    if st["job"] >= len(jobs):
-        return f"wayback: done ({len(jobs)} domain jobs)"
-    return (f"wayback: job {st['job'] + 1}/{len(jobs)} ({jobs[st['job']]['domain']}), "
-            f"page {st['page']}/{st['pages']}")
+    st = db.get_state(STATE, {"job": 0, "resume": None})
+    counts = db.get_state("wayback_counts", {})
+    found = sum(counts.values())
+    skipped = len(db.get_state("wayback_skipped", []))
+    head = (f"wayback: done ({len(jobs)} jobs)" if st["job"] >= len(jobs) else
+            f"wayback: job {st['job'] + 1}/{len(jobs)} ({jobs[st['job']]['domain']})")
+    top = ", ".join(f"{d} {n}" for d, n in sorted(counts.items(), key=lambda kv: -kv[1])[:6])
+    return f"{head}; links found so far {found}; jobs skipped {skipped}" + (f"; top: {top}" if top else "")

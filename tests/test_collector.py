@@ -113,23 +113,51 @@ def test_wayback_plan_batches(cfg):
 
 def test_wayback_step(monkeypatch, cfg, db):
     calls = []
+    pages = [
+        [["timestamp", "original"],
+         ["20101014000000", "http://www.hindu.com/2010/10/14/stories/hero-stone-found.htm"],
+         ["20101014000000", "http://www.hindu.com/photos/hero-stone.jpg"],
+         [], ["RESUMEKEY1"]],
+        [["timestamp", "original"],
+         ["20110101000000", "http://www.hindu.com/2011/01/01/stories/inscription-found.htm"]],
+    ]
 
     def fake_get(url, params=None, **kw):
-        calls.append(params)
-        if params.get("showNumPages"):
-            return resp("1")
-        rows = [["timestamp", "original"],
-                ["20101014000000", "http://www.hindu.com/2010/10/14/stories/hero-stone-found.htm"],
-                ["20101014000000", "http://www.hindu.com/photos/hero-stone.jpg"]]
-        return resp(json.dumps(rows))
+        calls.append(dict(params))
+        return resp(json.dumps(pages[len(calls) - 1]))
 
     monkeypatch.setattr(http, "get", fake_get)
-    assert wayback.step(db, cfg)          # numpages + page 0
-    c = db.conn.execute("SELECT * FROM candidates").fetchall()
-    assert len(c) == 1 and c[0]["hint_date"] == "2010-10-14" and c[0]["url"].startswith("https://")
-    assert any(f.startswith("original:(?i)") for f in calls[-1]["filter"])
-    assert wayback.step(db, cfg)          # page index past end -> next job
-    assert db.get_state("wayback")["job"] == 1
+    assert wayback.step(db, cfg)                       # first block, has resume key
+    st = db.get_state(wayback.STATE)
+    assert st == {"job": 0, "resume": "RESUMEKEY1"}
+    assert calls[0]["showResumeKey"] == "true" and "page" not in calls[0]
+    assert any(f.startswith("original:(?i)") for f in calls[0]["filter"])
+    assert wayback.step(db, cfg)                       # second block, no key -> next job
+    assert calls[1]["resumeKey"] == "RESUMEKEY1"
+    assert db.get_state(wayback.STATE)["job"] == 1
+    c = db.conn.execute("SELECT * FROM candidates ORDER BY url").fetchall()
+    assert len(c) == 2 and c[0]["hint_date"] == "2010-10-14" and c[0]["url"].startswith("https://")
+    assert "links found so far 2" in wayback.progress(db, cfg)
+
+
+def test_wayback_errors_skip_job(monkeypatch, cfg, db):
+    monkeypatch.setattr(http, "get", lambda *a, **k: resp("", status=503))
+    monkeypatch.setattr(wayback.time, "sleep", lambda s: None)
+    for _ in range(3):
+        wayback.step(db, cfg)
+    assert db.get_state(wayback.STATE)["job"] == 1
+    assert len(db.get_state("wayback_skipped")) == 1
+
+
+@pytest.mark.parametrize("text,n,key", [
+    ("", 0, None),
+    ("[]", 0, None),
+    ('[["timestamp","original"],["2020","http://a"],[],["K"]]', 1, "K"),
+    ('[["2020","http://a"],["2021","http://b"]]', 2, None),
+])
+def test_parse_cdx(text, n, key):
+    rows, resume = wayback.parse_cdx(text)
+    assert len(rows) == n and resume == key
 
 
 # ---------------- gdelt ----------------
@@ -211,7 +239,8 @@ def test_verify_and_export(monkeypatch, cfg, db, matcher, tmp_path):
 def test_country_for(cfg):
     assert verify.country_for("www.dailymirror.lk", cfg) == "Sri Lanka"
     assert verify.country_for("epaper.thehindu.com", cfg) == "India"
-    assert verify.country_for("unknown.example.com", cfg) == "Other"
+    assert verify.country_for("unknown.example.com", cfg) == "Unknown"
+    assert verify.country_for("www.tnpscthervupettagam.com", cfg) == "India"
     assert verify.country_for("news.ahram.org.eg", cfg) == "Egypt"
 
 

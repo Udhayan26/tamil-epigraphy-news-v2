@@ -31,6 +31,14 @@ def decode_gnews(link: str) -> str:
     """
     if "news.google.com" not in link:
         return link
+    # Current Google News ids need an online lookup; the googlenewsdecoder package does it.
+    try:
+        from googlenewsdecoder import gnewsdecoder
+        res = gnewsdecoder(link, timeout=15)
+        if isinstance(res, dict) and res.get("success") and res.get("decoded_url"):
+            return res["decoded_url"]
+    except Exception:
+        pass
     m = re.search(r"/articles/([A-Za-z0-9_\-]+)", link)
     if m:
         s = m.group(1)
@@ -51,6 +59,9 @@ def decode_gnews(link: str) -> str:
 
 
 def fetch(cfg: Config, recent_days: int | None = 7) -> list[dict]:
+    from ..match import Matcher
+    matcher = Matcher(cfg)
+    seen: set[str] = set()
     rows = []
     jobs = [(q, "en") for q in cfg.search_queries_en] + [(q, "ta") for q in cfg.search_queries_ta]
     for q, lang in jobs:
@@ -76,7 +87,12 @@ def fetch(cfg: Config, recent_days: int | None = 7) -> list[dict]:
                     d = parsedate_to_datetime(e.published).date().isoformat()
                 except Exception:
                     pass
-            rows.append({"url": decode_gnews(e.get("link", "")), "title": title, "date": d,
+            link = e.get("link", "")
+            # Only headlines that mention a keyword are worth decoding and checking.
+            if not link or link in seen or not matcher.title_candidate(title):
+                continue
+            seen.add(link)
+            rows.append({"url": decode_gnews(link), "title": title, "date": d,
                          "collector": "gnews"})
     return [r for r in rows if r["url"]]
 

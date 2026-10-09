@@ -90,6 +90,28 @@ date_archives:
 # Map top-level / country domains to a country when an article comes from a
 # site not listed above (e.g. via GDELT or Google News).
 tld_country:
+  # Individual sites (matched before country domains)
+  "tnpscthervupettagam.com": India
+  "usthadian.com": India
+  "varnam.org": India
+  "organiser.org": India
+  "drishtiias.com": India
+  "thebetterindia.com": India
+  "superkalam.com": India
+  "clearias.com": India
+  "journalsofindia.com": India
+  "madhyamamonline.com": India
+  "udayavani.com": India
+  "tamiljanam.com": India
+  "nakkheeran.in": India
+  "lemooriyanews.com": India
+  "tamilpulam.com": India
+  "orientalthane.com": India
+  "tamil.wiki": India
+  "ta.wikipedia.org": Reference
+  "en.wikipedia.org": Reference
+  "groups.google.com": Discussion group
+  "news.google.com": Google News (undecoded)
   ".lk": Sri Lanka
   ".my": Malaysia
   ".sg": Singapore

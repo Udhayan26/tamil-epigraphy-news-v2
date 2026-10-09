@@ -148,6 +148,18 @@ def run_all(db: DB, cfg, matcher: Matcher, minutes: float) -> None:
         save(db, cfg)
 
 
+def migrate(db: DB) -> None:
+    """One-time fixes to data saved by earlier versions."""
+    if not db.get_state("migr_gnews_recheck"):
+        # v2.0 judged Google News links by Google's redirect page and wrongly rejected them.
+        n = db.conn.execute(
+            "UPDATE candidates SET status='pending', tries=0, last_error=NULL "
+            "WHERE collector='gnews' AND status IN ('rejected','failed')").rowcount
+        db.conn.commit()
+        db.set_state("migr_gnews_recheck", True)
+        log.info("re-queued %d Google News links for checking", n)
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="collector")
     ap.add_argument("command", choices=["run", "backfill", "daily", "verify", "export", "status"])
@@ -166,6 +178,7 @@ def main(argv=None) -> int:
     cfg = load_config()
     db = DB(Path(args.db))
     matcher = Matcher(cfg)
+    migrate(db)
 
     if args.command == "run":
         run_all(db, cfg, matcher, args.minutes)
