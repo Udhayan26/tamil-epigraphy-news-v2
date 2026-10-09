@@ -1,0 +1,14 @@
+Last updated: 2026-10-09 15:35 UTC
+new articles today: 157   |   last 7 days: 157
+articles kept: 157
+urls checked: 209 of 209 (rejected 43, unreachable 9, waiting 0)
+wayback: job 86/520 (dinamani.com), page 1/1
+archives: The Hindu print archive: next 2006-03-02
+gdelt: query 1/57 ("hero stone" Tamil), month 93
+
+Most common reasons pages could not be opened:
+       5  live HTTP 403; archive HTTP 404
+       1  live page had no article text; archive had no article text
+       1  live HTTP 404; archive HTTP 404
+       1  live HTTP 403; archive had no article text
+       1  live HTTP 403; archive HTTP 403
