@@ -1,0 +1,332 @@
+# Keyword list for Tamil epigraphy & archaeology news collection.
+# Each group has Tamil and English terms. An article matches a group if ANY term
+# from that group appears in its title or text (case-insensitive).
+# Add or remove terms freely — the collector reads this file on every run.
+
+groups:
+  inscription:
+    label_ta: கல்வெட்டு
+    label_en: Inscription / Epigraphy
+    ta:
+      - கல்வெட்டு
+      - கல்வெட்டுகள்
+      - கல்வெட்டுக்கள்
+      - தமிழ் பிராமி
+      - தமிழ்-பிராமி
+      - வட்டெழுத்து
+      - கிரந்த எழுத்து
+      - செப்பேடு
+      - செப்பேடுகள்
+      - கல்வெட்டியல்
+      - கல்வெட்டு ஆய்வாளர்
+      - பானை ஓடு எழுத்து
+      - கீறல் குறியீடு
+    en:
+      - inscription
+      - inscriptions
+      - inscribed
+      - epigraph
+      - epigraphy
+      - epigraphist
+      - tamil-brahmi
+      - tamil brahmi
+      - tamili
+      - vatteluttu
+      - vattezhuthu
+      - vattezhuttu
+      - grantha script
+      - copper plate
+      - copper plates
+      - copper-plate
+      - graffiti marks
+      - potsherd inscription
+
+  hero_stone:
+    label_ta: நடுகல்
+    label_en: Hero stone / Memorial stone
+    ta:
+      - நடுகல்
+      - நடுகற்கள்
+      - நடுகல்லு
+      - வீரக்கல்
+      - வீரகல்
+      - சதிக்கல்
+      - நினைவுக்கல்
+    en:
+      - hero stone
+      - hero stones
+      - hero-stone
+      - herostone
+      - nadukal
+      - natukal
+      - virakkal
+      - sati stone
+
+  rock_art:
+    label_ta: பாறை ஓவியம்
+    label_en: Rock art / Rock painting
+    ta:
+      - பாறை ஓவியம்
+      - பாறை ஓவியங்கள்
+      - பாறை ஓவியத்
+      - குகை ஓவியம்
+      - குகை ஓவியங்கள்
+      - பாறைக் கீறல்
+      - பாறை செதுக்கல்
+      - வரலாற்றுக்கு முந்தைய ஓவிய
+    en:
+      - rock art
+      - rock painting
+      - rock paintings
+      - rock-art
+      - cave painting
+      - cave paintings
+      - petroglyph
+      - petroglyphs
+      - rock shelter
+      - cupule
+
+  archaeology:
+    label_ta: தொல்லியல்
+    label_en: Archaeology / Excavation
+    ta:
+      - தொல்லியல்
+      - தொல்லியல் துறை
+      - அகழாய்வு
+      - அகழ்வாய்வு
+      - அகழ்வாராய்ச்சி
+      - தொல்பொருள்
+      - தொல்பொருட்கள்
+      - முதுமக்கள் தாழி
+      - ஈமத்தாழி
+      - பெருங்கற்கால
+      - சமணப் படுக்கை
+      - கற்படுக்கை
+      - கீழடி
+      - ஆதிச்சநல்லூர்
+      - சிவகளை
+      - கொடுமணல்
+      - பொருந்தல்
+      - அழகன்குளம்
+      - கொற்கை
+      - மயிலாடும்பாறை
+      - கங்கைகொண்ட சோழபுரம் அகழாய்வு
+      - வெம்பக்கோட்டை
+      - கீழ்நமண்டி
+      - துலுக்கர்பட்டி
+    en:
+      - archaeology
+      - archaeological
+      - archaeologist
+      - archeology
+      - archeological
+      - archaeological excavation
+      - archaeological excavations
+      - excavation site
+      - urn burial
+      - megalithic
+      - megalith
+      - jain beds
+      - keeladi
+      - keezhadi
+      - kizhadi
+      - adichanallur
+      - sivakalai
+      - kodumanal
+      - porunthal
+      - alagankulam
+      - korkai
+      - mayiladumparai
+      - arikamedu
+      - vembakottai
+      - keelnamandi
+      - thulukkarpatti
+      - pattanam
+      - tnsda
+
+# An article is kept only if it matches at least one group above AND
+# at least one "context" term below (so generic world archaeology news
+# without any Tamil connection is dropped). Set require_context: false
+# to keep everything.
+require_context: true
+context:
+  ta:
+    - தமிழ்
+    - தமிழக
+    - தமிழ்நாடு
+    - சோழ
+    - பாண்டிய
+    - பல்லவ
+    - சேர மன்னர்
+    - சேரர்
+    - சங்க கால
+    - சங்ககால
+  en:
+    - tamil
+    - tamil nadu
+    - tamilnadu
+    - madras
+    - chola
+    - pandya
+    - pallava
+    - chera
+    - sangam
+    - puducherry
+    - pondicherry
+    - jaffna
+    - sri lanka
+    - madurai
+    - thanjavur
+    - tiruchi
+    - tirunelveli
+    - coimbatore
+    - erode
+    - krishnagiri
+    - dharmapuri
+    - vellore
+    - villupuram
+    - pudukkottai
+    - sivaganga
+    - ramanathapuram
+    - virudhunagar
+    - thoothukudi
+    - tenkasi
+    - dindigul
+    - theni
+    - nilgiris
+    - kanchipuram
+    - tiruvannamalai
+    - salem
+    - namakkal
+    - karur
+    - tiruppur
+    - kanyakumari
+    - nagapattinam
+    - mayiladuthurai
+    - cuddalore
+    - chengalpattu
+    - kallakurichi
+    - ariyalur
+    - perambalur
+    - kumbakonam
+    - mamallapuram
+    - mahabalipuram
+    # International finds connected to Tamil
+    - berenike
+    - quseir
+    - myos hormos
+    - khor rori
+    - khuan luk pat
+    - phu khao thong
+    - bujang valley
+    - quanzhou
+    - anuradhapura
+    - kantarodai
+
+# Search queries used for GDELT and Google News (title/full-text search engines).
+# Kept shorter than the full keyword list to stay within API limits.
+search_queries:
+  en:
+    - '"hero stone" Tamil'
+    - '"Tamil-Brahmi"'
+    - '"Tamil Brahmi" inscription'
+    - 'inscription Tamil Nadu'
+    - 'Chola inscription'
+    - 'Pandya inscription'
+    - 'Pallava inscription'
+    - 'Vatteluttu'
+    - '"copper plates" Tamil'
+    - '"rock art" Tamil Nadu'
+    - '"rock paintings" Tamil Nadu'
+    - 'Keeladi'
+    - 'Adichanallur'
+    - 'Sivakalai'
+    - 'Tamil Nadu archaeology excavation'
+    - 'Tamil inscription Sri Lanka'
+    - 'Tamil inscription Egypt'
+    - 'Tamil inscription Thailand'
+    - 'Tamil inscription Oman'
+    - 'Tamil inscription China'
+    - 'Tamil inscription Indonesia'
+    - 'Tamil inscription Malaysia Bujang'
+    - 'Tamil inscription Vietnam'
+    - 'hero stone discovered'
+    - 'hero stones found Krishnagiri'
+    - 'memorial stone inscription Tamil'
+    - 'Vijayanagara inscription Tamil Nadu'
+    - 'Jain beds Tamil-Brahmi'
+    - 'Tamil Nadu State Department of Archaeology'
+    - 'Porunai civilisation'
+    - 'Kodumanal excavation'
+  ta:
+    # Natural Tamil headline phrases work best on Google News Tamil.
+    - 'நடுகல் கண்டுபிடிப்பு'
+    - 'நடுகல் கண்டெடுப்பு'
+    - 'நடுகற்கள் கண்டுபிடிப்பு'
+    - 'வீரக்கல் கண்டுபிடிப்பு'
+    - 'கல்வெட்டு கண்டெடுப்பு'
+    - 'கல்வெட்டு கண்டுபிடிப்பு'
+    - 'சோழர் கால கல்வெட்டு'
+    - 'பாண்டியர் கால கல்வெட்டு'
+    - 'பல்லவர் கால கல்வெட்டு'
+    - 'விஜயநகர கால கல்வெட்டு'
+    - 'தமிழ் பிராமி கல்வெட்டு'
+    - 'தமிழி எழுத்து பானை ஓடு'
+    - 'வட்டெழுத்து கல்வெட்டு'
+    - 'செப்பேடு கண்டெடுப்பு'
+    - 'பாறை ஓவியங்கள் கண்டுபிடிப்பு'
+    - 'பாறை ஓவியம் கண்டெடுப்பு'
+    - 'குகை ஓவியங்கள்'
+    - 'தொல்லியல் அகழாய்வு'
+    - 'கீழடி அகழாய்வு'
+    - 'ஆதிச்சநல்லூர் அகழாய்வு'
+    - 'சிவகளை அகழாய்வு'
+    - 'முதுமக்கள் தாழி கண்டெடுப்பு'
+    - 'சமணப் படுக்கை கல்வெட்டு'
+    - 'பழமையான சிற்பம் கண்டெடுப்பு'
+    - 'எகிப்து தமிழ் கல்வெட்டு'
+    - 'இலங்கை தமிழ் கல்வெட்டு'
+
+# English words likely to appear in news URL slugs. Used to pre-filter the
+# Wayback Machine URL index (20-year backfill). Tamil slugs are added
+# automatically from the Tamil terms above (percent-encoded).
+url_slug_terms:
+  - hero-stone
+  - herostone
+  - hero-stones
+  - memorial-stone
+  - nadukal
+  - natukal
+  - inscription
+  - epigraph
+  - brahmi
+  - tamili
+  - vattezhuthu
+  - vatteluttu
+  - vattezhuttu
+  - copper-plate
+  - rock-art
+  - rock-painting
+  - cave-painting
+  - petroglyph
+  - rock-shelter
+  - keeladi
+  - keezhadi
+  - adichanallur
+  - sivakalai
+  - kodumanal
+  - porunthal
+  - alagankulam
+  - korkai
+  - mayiladumparai
+  - arikamedu
+  - excavation
+  - excavat
+  - archaeolog
+  - archeolog
+  - megalith
+  - urn-burial
+  - potsherd
+  - kalvettu
+  - tholliyal
+  - agazhaivu

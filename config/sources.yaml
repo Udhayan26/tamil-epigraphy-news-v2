@@ -1,0 +1,128 @@
+# News websites to backfill from the Wayback Machine URL index (CDX API).
+# For each domain the collector lists every archived URL whose address contains
+# one of the url_slug_terms in keywords.yaml, then opens each page to confirm
+# the keywords really appear in the article.
+#
+# country: where the outlet is published (used for the "Source country" column)
+# lang:    main language of the outlet (ta / en)
+# from/to: years to cover
+
+wayback:
+  from_year: 2005
+  to_year: 2026
+  domains:
+    # ---- English, India ----
+    - {domain: thehindu.com,                  country: India, lang: en}
+    - {domain: hindu.com,                     country: India, lang: en}   # pre-2011 site
+    - {domain: frontline.thehindu.com,        country: India, lang: en}
+    - {domain: newindianexpress.com,          country: India, lang: en}
+    - {domain: dtnext.in,                     country: India, lang: en}
+    - {domain: timesofindia.indiatimes.com,   country: India, lang: en}
+    - {domain: deccanherald.com,              country: India, lang: en}
+    - {domain: deccanchronicle.com,           country: India, lang: en}
+    - {domain: indianexpress.com,             country: India, lang: en}
+    - {domain: ndtv.com,                      country: India, lang: en}
+    - {domain: etvbharat.com,                 country: India, lang: en}
+    - {domain: thehindubusinessline.com,      country: India, lang: en}
+    - {domain: dailypioneer.com,              country: India, lang: en}
+    - {domain: thestatesman.com,              country: India, lang: en}
+    - {domain: theweek.in,                    country: India, lang: en}
+    - {domain: indiatoday.in,                 country: India, lang: en}
+    # ---- Tamil, India ----
+    - {domain: hindutamil.in,                 country: India, lang: ta}
+    - {domain: tamil.thehindu.com,            country: India, lang: ta}   # old Hindu Tamil
+    - {domain: dinamani.com,                  country: India, lang: ta}
+    - {domain: dinamalar.com,                 country: India, lang: ta}
+    - {domain: dailythanthi.com,              country: India, lang: ta}
+    - {domain: maalaimalar.com,               country: India, lang: ta}
+    - {domain: vikatan.com,                   country: India, lang: ta}
+    - {domain: tamil.oneindia.com,            country: India, lang: ta}
+    - {domain: tamil.news18.com,              country: India, lang: ta}
+    - {domain: tamil.samayam.com,             country: India, lang: ta}
+    - {domain: puthiyathalaimurai.com,        country: India, lang: ta}
+    - {domain: tamil.indianexpress.com,       country: India, lang: ta}
+    - {domain: tamil.etvbharat.com,           country: India, lang: ta}
+    - {domain: kalkionline.com,               country: India, lang: ta}
+    - {domain: bbc.com,                       country: UK,    lang: ta, path_prefix: "bbc.com/tamil"}
+    # ---- Sri Lanka ----
+    - {domain: dailymirror.lk,                country: Sri Lanka, lang: en}
+    - {domain: sundaytimes.lk,                country: Sri Lanka, lang: en}
+    - {domain: dailynews.lk,                  country: Sri Lanka, lang: en}
+    - {domain: island.lk,                     country: Sri Lanka, lang: en}
+    - {domain: tamilguardian.com,             country: Sri Lanka, lang: en}
+    - {domain: virakesari.lk,                 country: Sri Lanka, lang: ta}
+    - {domain: thinakaran.lk,                 country: Sri Lanka, lang: ta}
+    - {domain: tamilmirror.lk,                country: Sri Lanka, lang: ta}
+    # ---- Southeast Asia ----
+    - {domain: thestar.com.my,                country: Malaysia,  lang: en}
+    - {domain: nst.com.my,                    country: Malaysia,  lang: en}
+    - {domain: straitstimes.com,              country: Singapore, lang: en}
+    - {domain: tamilmurasu.com.sg,            country: Singapore, lang: ta}
+    - {domain: bangkokpost.com,               country: Thailand,  lang: en}
+    # ---- Middle East / international archaeology news ----
+    - {domain: ahram.org.eg,                  country: Egypt,     lang: en}
+    - {domain: timesofoman.com,               country: Oman,      lang: en}
+    - {domain: archaeology.org,               country: USA,       lang: en}
+    - {domain: heritagedaily.com,             country: UK,        lang: en}
+    - {domain: arkeonews.net,                 country: Turkey,    lang: en}
+    - {domain: ancient-origins.net,           country: UK,        lang: en}
+    # ---- Added in v2 (found useful in search rounds) ----
+    - {domain: dinakaran.com,                 country: India, lang: ta}
+    - {domain: nakkheeran.in,                 country: India, lang: ta}
+    - {domain: tamiljanam.com,                country: India, lang: ta}
+    - {domain: lemooriyanews.com,             country: India, lang: ta}
+    - {domain: tamilpulam.com,                country: India, lang: ta}
+    - {domain: thenewsminute.com,             country: India, lang: en}
+
+# Newspaper "archive by date" index pages. Each page lists that day's article
+# titles; titles matching a keyword are queued and then verified.
+# {y} {m} {d} are replaced with year, 2-digit month, 2-digit day.
+# Experimental: if a site changes its layout this simply returns nothing.
+date_archives:
+  - name: The Hindu print archive
+    url: "https://www.thehindu.com/archive/print/{y}/{m}/{d}/"
+    country: India
+    lang: en
+    from: "2006-01-01"
+    to: "2026-12-31"
+    link_must_contain: "thehindu.com"
+
+# Map top-level / country domains to a country when an article comes from a
+# site not listed above (e.g. via GDELT or Google News).
+tld_country:
+  ".lk": Sri Lanka
+  ".my": Malaysia
+  ".sg": Singapore
+  ".eg": Egypt
+  ".om": Oman
+  ".th": Thailand
+  ".id": Indonesia
+  ".vn": Vietnam
+  ".mm": Myanmar
+  ".cn": China
+  ".ae": UAE
+  ".uk": UK
+  ".au": Australia
+  ".ca": Canada
+  ".fr": France
+  ".de": Germany
+  ".in": India
+
+# Places mentioned in the article text are listed in a separate column so
+# you can filter international finds.
+places:
+  - {name: Tamil Nadu,  terms: [tamil nadu, tamilnadu, தமிழ்நாடு, தமிழகம், தமிழகத்]}
+  - {name: Puducherry,  terms: [puducherry, pondicherry, புதுச்சேரி, arikamedu]}
+  - {name: Kerala,      terms: [kerala, கேரள, pattanam]}
+  - {name: Karnataka,   terms: [karnataka, கர்நாடக]}
+  - {name: Andhra / Telangana, terms: [andhra, telangana, ஆந்திர, தெலங்கான]}
+  - {name: Sri Lanka,   terms: [sri lanka, இலங்கை, jaffna, யாழ்ப்பாண, anuradhapura, kantarodai]}
+  - {name: Egypt,       terms: [egypt, எகிப்து, berenike, quseir, myos hormos]}
+  - {name: Oman,        terms: [oman, ஓமன், khor rori]}
+  - {name: Thailand,    terms: [thailand, தாய்லாந்து, khuan luk pat, phu khao thong]}
+  - {name: Malaysia,    terms: [malaysia, மலேசிய, bujang, kedah]}
+  - {name: Indonesia,   terms: [indonesia, இந்தோனேசிய, sumatra, java]}
+  - {name: Vietnam,     terms: [vietnam, வியட்நாம்]}
+  - {name: Myanmar,     terms: [myanmar, burma, மியான்மர்]}
+  - {name: China,       terms: [china, quanzhou, சீன]}
+  - {name: Cambodia,    terms: [cambodia, கம்போடிய, angkor]}
