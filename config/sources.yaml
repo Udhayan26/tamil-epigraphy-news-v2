@@ -10,32 +10,89 @@
 wayback:
   from_year: 2005
   to_year: 2026
+  # Big newspapers are searched only in their Tamil Nadu / heritage sections
+  # ("prefixes"): searching a whole big site times out at the web archive (HTTP 504).
+  # Sites without "prefixes" are searched whole (fine for smaller sites).
   domains:
     # ---- English, India ----
-    - {domain: thehindu.com,                  country: India, lang: en}
-    - {domain: hindu.com,                     country: India, lang: en}   # pre-2011 site
-    - {domain: frontline.thehindu.com,        country: India, lang: en}
-    - {domain: newindianexpress.com,          country: India, lang: en}
-    - {domain: dtnext.in,                     country: India, lang: en}
-    - {domain: timesofindia.indiatimes.com,   country: India, lang: en}
-    - {domain: deccanherald.com,              country: India, lang: en}
-    - {domain: deccanchronicle.com,           country: India, lang: en}
-    - {domain: indianexpress.com,             country: India, lang: en}
-    - {domain: ndtv.com,                      country: India, lang: en}
-    - {domain: etvbharat.com,                 country: India, lang: en}
-    - {domain: thehindubusinessline.com,      country: India, lang: en}
-    - {domain: dailypioneer.com,              country: India, lang: en}
-    - {domain: thestatesman.com,              country: India, lang: en}
+    - domain: thehindu.com
+      country: India
+      lang: en
+      prefixes: [news/national/tamil-nadu/, news/cities/Madurai/, news/cities/Tiruchirapalli/,
+                 news/cities/Coimbatore/, news/cities/chennai/, news/cities/Puducherry/,
+                 news/cities/Vellore/, society/history-and-culture/, entertainment/art/]
+    - domain: frontline.thehindu.com
+      country: India
+      lang: en
+      prefixes: [arts-and-culture/, the-nation/]
+    - domain: newindianexpress.com
+      country: India
+      lang: en
+      prefixes: [states/tamil-nadu/, cities/chennai/]
+    - domain: dtnext.in
+      country: India
+      lang: en
+      prefixes: [news/tamilnadu/, tamilnadu/, news/chennai/, chennai/]
+    - domain: timesofindia.indiatimes.com
+      country: India
+      lang: en
+      prefixes: [city/chennai/, city/madurai/, city/trichy/, city/coimbatore/, city/puducherry/,
+                 city/salem/, city/vellore/]
+    - domain: deccanherald.com
+      country: India
+      lang: en
+      prefixes: [india/tamil-nadu/, south/tamil-nadu/]
+    - domain: deccanchronicle.com
+      country: India
+      lang: en
+      prefixes: [nation/current-affairs/, southern-states/tamil-nadu/]
+    - domain: indianexpress.com
+      country: India
+      lang: en
+      prefixes: [article/cities/chennai/, article/india/tamil-nadu/]
+    - domain: ndtv.com
+      country: India
+      lang: en
+      prefixes: [tamil-nadu-news/, chennai-news/]
+    - domain: etvbharat.com
+      country: India
+      lang: en
+      prefixes: [english/state/tamil-nadu/, english/bharat/, ta/state/, tamil/tamil-nadu/]
+    - domain: indiatoday.in
+      country: India
+      lang: en
+      prefixes: [india/tamil-nadu/, cities/chennai/]
+    - {domain: thenewsminute.com,             country: India, lang: en}
     - {domain: theweek.in,                    country: India, lang: en}
-    - {domain: indiatoday.in,                 country: India, lang: en}
     # ---- Tamil, India ----
-    - {domain: hindutamil.in,                 country: India, lang: ta}
+    - domain: hindutamil.in
+      country: India
+      lang: ta
+      prefixes: [news/tamilnadu/, news/supplements/, news/opinion/]
     - {domain: tamil.thehindu.com,            country: India, lang: ta}   # old Hindu Tamil
-    - {domain: dinamani.com,                  country: India, lang: ta}
-    - {domain: dinamalar.com,                 country: India, lang: ta}
-    - {domain: dailythanthi.com,              country: India, lang: ta}
-    - {domain: maalaimalar.com,               country: India, lang: ta}
-    - {domain: vikatan.com,                   country: India, lang: ta}
+    - domain: dinamani.com
+      country: India
+      lang: ta
+      prefixes: [tamilnadu/, specials/, latest-news/]
+    - domain: dinamalar.com
+      country: India
+      lang: ta
+      prefixes: [news/tamil-nadu-news/, news/tamil-nadu-district-news, news/world-tamil-news/,
+                 news/latest-tamil-news/]
+    - domain: dailythanthi.com
+      country: India
+      lang: ta
+      prefixes: [news/tamilnadu/, News/Districts/, News/State/, news/state/]
+    - domain: maalaimalar.com
+      country: India
+      lang: ta
+      prefixes: [news/district/, news/state/]
+    - domain: vikatan.com
+      country: India
+      lang: ta
+      prefixes: [government-and-politics/archaeology/, arts/, spiritual/, history/]
+    - {domain: dinakaran.com,                 country: India, lang: ta}
+    - {domain: nakkheeran.in,                 country: India, lang: ta}
     - {domain: tamil.oneindia.com,            country: India, lang: ta}
     - {domain: tamil.news18.com,              country: India, lang: ta}
     - {domain: tamil.samayam.com,             country: India, lang: ta}
@@ -43,13 +100,19 @@ wayback:
     - {domain: tamil.indianexpress.com,       country: India, lang: ta}
     - {domain: tamil.etvbharat.com,           country: India, lang: ta}
     - {domain: kalkionline.com,               country: India, lang: ta}
-    - {domain: bbc.com,                       country: UK,    lang: ta, path_prefix: "bbc.com/tamil"}
+    - {domain: tamiljanam.com,                country: India, lang: ta}
+    - {domain: lemooriyanews.com,             country: India, lang: ta}
+    - {domain: tamilpulam.com,                country: India, lang: ta}
+    - domain: bbc.com
+      country: UK
+      lang: ta
+      prefixes: [tamil/]
     # ---- Sri Lanka ----
+    - {domain: tamilguardian.com,             country: Sri Lanka, lang: en}
     - {domain: dailymirror.lk,                country: Sri Lanka, lang: en}
     - {domain: sundaytimes.lk,                country: Sri Lanka, lang: en}
     - {domain: dailynews.lk,                  country: Sri Lanka, lang: en}
     - {domain: island.lk,                     country: Sri Lanka, lang: en}
-    - {domain: tamilguardian.com,             country: Sri Lanka, lang: en}
     - {domain: virakesari.lk,                 country: Sri Lanka, lang: ta}
     - {domain: thinakaran.lk,                 country: Sri Lanka, lang: ta}
     - {domain: tamilmirror.lk,                country: Sri Lanka, lang: ta}
@@ -66,13 +129,11 @@ wayback:
     - {domain: heritagedaily.com,             country: UK,        lang: en}
     - {domain: arkeonews.net,                 country: Turkey,    lang: en}
     - {domain: ancient-origins.net,           country: UK,        lang: en}
-    # ---- Added in v2 (found useful in search rounds) ----
-    - {domain: dinakaran.com,                 country: India, lang: ta}
-    - {domain: nakkheeran.in,                 country: India, lang: ta}
-    - {domain: tamiljanam.com,                country: India, lang: ta}
-    - {domain: lemooriyanews.com,             country: India, lang: ta}
-    - {domain: tamilpulam.com,                country: India, lang: ta}
-    - {domain: thenewsminute.com,             country: India, lang: en}
+
+# hindu.com (The Hindu before 2011) is not in the list above: its article
+# addresses are numbers (e.g. /2010/04/14/stories/2010041456210700.htm), so
+# keyword matching on the address cannot work. The print-archive headline
+# lists below cover that period instead.
 
 # Newspaper "archive by date" index pages. Each page lists that day's article
 # titles; titles matching a keyword are queued and then verified.

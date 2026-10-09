@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 CDX = "https://web.archive.org/cdx/search/cdx"
 # Short regexes keep each archive query fast; big sites time out on long ones.
-MAX_REGEX_LEN = 350
+MAX_REGEX_LEN = 900   # sections are small, so longer keyword lists per query are fine
 
 SKIP_EXT = re.compile(r"\.(jpg|jpeg|png|gif|webp|svg|css|js|pdf|mp4|mp3|xml|json|rss|ico)(\?|$)", re.I)
 SKIP_PATH = re.compile(r"/(tag|tags|topic|topics|search|author|authors|amp/amp|photos?|gallery|videos?|comments?)/", re.I)
@@ -42,7 +42,7 @@ def _batches(terms: list[str]) -> list[str]:
 
 
 def plan(cfg: Config) -> list[dict]:
-    """List of (domain, regex) jobs."""
+    """One job per (site or site section) x (batch of address keywords)."""
     en_terms = [t for t in cfg.url_slug_terms if "%" not in t]
     ta_terms = [t for t in cfg.url_slug_terms if "%" in t]
     jobs = []
@@ -50,31 +50,33 @@ def plan(cfg: Config) -> list[dict]:
         terms = list(en_terms)
         if d.get("lang") == "ta":
             terms += ta_terms
-        for i, rx in enumerate(_batches(terms)):
-            jobs.append({"domain": d["domain"], "path_prefix": d.get("path_prefix"),
-                         "batch": i, "regex": rx})
+        prefixes = d.get("prefixes") or ([d["path_prefix"].split("/", 1)[1]]
+                                         if d.get("path_prefix") else [None])
+        for prefix in prefixes:
+            target = f"{d['domain']}/{prefix}" if prefix else d["domain"]
+            for i, rx in enumerate(_batches(terms)):
+                jobs.append({"domain": d["domain"], "target": target,
+                             "match": "prefix" if prefix else "domain",
+                             "batch": i, "regex": rx})
     return jobs
 
 
 def _params(job: dict, cfg: Config) -> dict:
     w = cfg.wayback
-    url = job["path_prefix"] + "*" if job.get("path_prefix") else job["domain"]
-    p = {
-        "url": url,
+    return {
+        "url": job["target"],
+        "matchType": job["match"],
         "output": "json",
         "fl": "timestamp,original",
         "collapse": "urlkey",
         "from": str(w.get("from_year", 2005)),
         "to": str(w.get("to_year", 2026)),
-        "filter": ["statuscode:200", "mimetype:text/html", f"original:(?i).*({job['regex']}).*"],
+        "filter": ["statuscode:200", f"original:(?i).*({job['regex']}).*"],
     }
-    if not job.get("path_prefix"):
-        p["matchType"] = "domain"
-    return p
 
 
 PAGE_LIMIT = 3000      # rows per request
-STATE = "wayback_v2"   # v2: resume-key paging (page-number paging returned nothing with filters)
+STATE = "wayback_v3"   # v3: site sections + resume-key paging (whole-site queries hit HTTP 504)
 
 
 def parse_cdx(text: str) -> tuple[list[list[str]], str | None]:
@@ -126,7 +128,7 @@ def step(db: DB, cfg: Config) -> bool:
                           "date": date_from_url(url) or "", "wayback_ts": ts})
         added = db.add_candidates(cands)
         _bump_count(db, job["domain"], len(cands))
-        log.info("wayback %s batch %d: %d urls, %d new%s", job["domain"], job["batch"],
+        log.info("wayback %s batch %d: %d urls, %d new%s", job["target"], job["batch"],
                  len(cands), added, " (more)" if resume else "")
         st = ({"job": st["job"], "resume": resume} if resume
               else {"job": st["job"] + 1, "resume": None})
@@ -135,7 +137,7 @@ def step(db: DB, cfg: Config) -> bool:
         log.warning("wayback %s error (%d): %s", job["domain"], st["errors"], e)
         if st["errors"] >= 3:
             skipped = db.get_state("wayback_skipped", [])
-            skipped.append({"domain": job["domain"], "batch": job["batch"], "error": str(e)[:120]})
+            skipped.append({"target": job["target"], "batch": job["batch"], "error": str(e)[:120]})
             db.set_state("wayback_skipped", skipped)
             st = {"job": st["job"] + 1, "resume": None}
         time.sleep(5)
@@ -148,8 +150,8 @@ def progress(db: DB, cfg: Config) -> str:
     st = db.get_state(STATE, {"job": 0, "resume": None})
     counts = db.get_state("wayback_counts", {})
     found = sum(counts.values())
-    skipped = len(db.get_state("wayback_skipped", []))
+    skipped = len([x for x in db.get_state("wayback_skipped", []) if "target" in x])
     head = (f"wayback: done ({len(jobs)} jobs)" if st["job"] >= len(jobs) else
-            f"wayback: job {st['job'] + 1}/{len(jobs)} ({jobs[st['job']]['domain']})")
+            f"wayback: job {st['job'] + 1}/{len(jobs)} ({jobs[st['job']]['target']})")
     top = ", ".join(f"{d} {n}" for d, n in sorted(counts.items(), key=lambda kv: -kv[1])[:6])
     return f"{head}; links found so far {found}; jobs skipped {skipped}" + (f"; top: {top}" if top else "")

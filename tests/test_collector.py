@@ -323,3 +323,14 @@ def test_gnews_respects_time_budget(monkeypatch, cfg):
     monkeypatch.setattr(http, "get", lambda *a, **k: calls.append(1) or resp("<rss></rss>"))
     gnews.fetch(cfg, recent_days=7, budget_min=0)
     assert calls == []                           # budget already used up: no requests
+
+
+def test_wayback_uses_sections_for_big_sites(cfg):
+    jobs = wayback.plan(cfg)
+    hindu = [j for j in jobs if j["domain"] == "thehindu.com"]
+    assert hindu and all(j["match"] == "prefix" for j in hindu)
+    assert any(j["target"] == "thehindu.com/news/national/tamil-nadu/" for j in hindu)
+    small = [j for j in jobs if j["domain"] == "dinakaran.com"]
+    assert small and all(j["match"] == "domain" and j["target"] == "dinakaran.com" for j in small)
+    p = wayback._params(hindu[0], cfg)
+    assert p["matchType"] == "prefix" and p["url"].startswith("thehindu.com/news/")
