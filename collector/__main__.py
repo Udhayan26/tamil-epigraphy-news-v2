@@ -158,6 +158,18 @@ def migrate(db: DB) -> None:
         db.conn.commit()
         db.set_state("migr_gnews_recheck", True)
         log.info("re-queued %d Google News links for checking", n)
+    if not db.get_state("migr_wayback_recheck"):
+        # v2.2: image addresses were queued as articles; live paywall pages caused rejections.
+        n1 = db.conn.execute(
+            "UPDATE candidates SET status='rejected', last_error='image address' "
+            "WHERE collector LIKE 'wayback%' AND lower(url) LIKE '%/alternates/%'").rowcount
+        n2 = db.conn.execute(
+            "UPDATE candidates SET status='pending', tries=0, last_error=NULL "
+            "WHERE collector LIKE 'wayback%' AND status='rejected' "
+            "AND lower(url) NOT LIKE '%/alternates/%' AND wayback_ts != ''").rowcount
+        db.conn.commit()
+        db.set_state("migr_wayback_recheck", True)
+        log.info("marked %d image links; re-queued %d history links for archive re-check", n1, n2)
 
 
 def main(argv=None) -> int:

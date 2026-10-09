@@ -32,6 +32,18 @@ def _extract(html: str, url: str) -> dict | None:
     return {"title": d.get("title") or "", "date": d.get("date") or "", "text": d.get("text") or ""}
 
 
+def _fetch_archive(url: str, ts: str) -> tuple[dict | None, str]:
+    try:
+        r = http.get(f"https://web.archive.org/web/{ts}id_/{url}", timeout=60, retries=2, backoff=5)
+        if r is not None and r.status_code == 200:
+            ex = _extract(r.text, url)
+            if ex and len(ex["text"]) >= MIN_TEXT:
+                return ex, f"https://web.archive.org/web/{ts}/{url}"
+    except Exception:
+        pass
+    return None, ""
+
+
 def _fetch(url: str, wayback_ts: str) -> tuple[dict | None, str, str]:
     """Return (extracted, archive_url_used, error)."""
     err = ""
@@ -87,6 +99,14 @@ def _process(row, cfg: Config, matcher: Matcher) -> tuple[str, dict | None, str]
     basis = "full-text"
     if ex:
         res = matcher.accept(title, text)
+        if not res and not arch and row["wayback_ts"]:
+            # Live page may be a paywall / cookie screen: try the saved archive copy.
+            ex2, arch2 = _fetch_archive(url, row["wayback_ts"])
+            if ex2:
+                res2 = matcher.accept(ex2["title"] or title, ex2["text"])
+                if res2:
+                    ex, arch, res = ex2, arch2, res2
+                    title, text = ex2["title"] or title, ex2["text"]
         if not res:
             return "rejected", None, ""
     else:

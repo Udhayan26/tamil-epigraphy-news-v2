@@ -334,3 +334,34 @@ def test_wayback_uses_sections_for_big_sites(cfg):
     assert small and all(j["match"] == "domain" and j["target"] == "dinakaran.com" for j in small)
     p = wayback._params(hindu[0], cfg)
     assert p["matchType"] == "prefix" and p["url"].startswith("thehindu.com/news/")
+
+
+@pytest.mark.parametrize("raw,expected", [
+    ("http://www.thehindu.com/news/x/terracotta-pipes-keeladi/article68464783.ece/amp/",
+     "https://www.thehindu.com/news/x/terracotta-pipes-keeladi/article68464783.ece"),
+    ("https://www.dinamalar.com/news/a/hero-stone/123?utm=1#top", "https://www.dinamalar.com/news/a/hero-stone/123"),
+    ("https://www.dtnext.in/news/tamilnadu/hero-stone-found/amp", "https://www.dtnext.in/news/tamilnadu/hero-stone-found/"),
+])
+def test_canonical(raw, expected):
+    assert wayback.canonical(raw) == expected
+
+
+def test_image_alternates_skipped():
+    u = "https://www.thehindu.com/news/cities/Madurai/10m5x4/article32239394.ece/ALTERNATES/LANDSCAPE_615/INSCRIPTION"
+    assert wayback.SKIP_PATH.search(u)
+
+
+def test_live_paywall_falls_back_to_archive(monkeypatch, cfg, db, matcher):
+    paywall = "<html><body><article><p>" + ("Subscribe to continue reading. " * 20) + "</p></article></body></html>"
+
+    def fake_get(url, **kw):
+        if url.startswith("https://web.archive.org/"):
+            return resp(ARTICLE_EN, 200, url)
+        return resp(paywall, 200, url)
+
+    monkeypatch.setattr(http, "get", fake_get)
+    db.add_candidate("https://www.thehindu.com/hero.ece", "wayback:thehindu.com", wayback_ts="20200101000000")
+    db.commit()
+    verify.verify_batch(db, cfg, matcher, workers=1)
+    a = db.conn.execute("SELECT * FROM articles").fetchone()
+    assert a is not None and a["archive_url"].startswith("https://web.archive.org/web/20200101000000/")

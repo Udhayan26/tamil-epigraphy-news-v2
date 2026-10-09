@@ -24,7 +24,18 @@ CDX = "https://web.archive.org/cdx/search/cdx"
 MAX_REGEX_LEN = 900   # sections are small, so longer keyword lists per query are fine
 
 SKIP_EXT = re.compile(r"\.(jpg|jpeg|png|gif|webp|svg|css|js|pdf|mp4|mp3|xml|json|rss|ico)(\?|$)", re.I)
-SKIP_PATH = re.compile(r"/(tag|tags|topic|topics|search|author|authors|amp/amp|photos?|gallery|videos?|comments?)/", re.I)
+SKIP_PATH = re.compile(r"/(tag|tags|topic|topics|search|author|authors|amp/amp|photos?|gallery|videos?|"
+                       r"comments?|alternates|binary|incoming|webstories|web-stories)(/|$)", re.I)
+
+
+def canonical(url: str) -> str:
+    """Same article saved under several addresses: drop query, fragment and /amp/ endings."""
+    url = url.split("#", 1)[0].split("?", 1)[0]
+    url = re.sub(r"/amp/?$", "/", url)
+    url = re.sub(r"(\.ece)/.*$", r"\1", url)          # The Hindu: article123.ece/<anything>
+    if url.startswith("http://"):
+        url = "https://" + url[len("http://"):]
+    return url
 
 
 def _batches(terms: list[str]) -> list[str]:
@@ -123,7 +134,7 @@ def step(db: DB, cfg: Config) -> bool:
         for ts, url, *_ in rows:
             if SKIP_EXT.search(url) or SKIP_PATH.search(url):
                 continue
-            url = url.replace("http://", "https://", 1) if url.startswith("http://") else url
+            url = canonical(url)
             cands.append({"url": url, "collector": f"wayback:{job['domain']}",
                           "date": date_from_url(url) or "", "wayback_ts": ts})
         added = db.add_candidates(cands)
