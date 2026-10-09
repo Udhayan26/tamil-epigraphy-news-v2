@@ -1,8 +1,8 @@
-Last updated: 2026-10-09 15:35 UTC
+Last updated: 2026-10-09 18:08 UTC
 new articles today: 157   |   last 7 days: 157
 articles kept: 157
-urls checked: 209 of 209 (rejected 43, unreachable 9, waiting 0)
-wayback: job 86/520 (dinamani.com), page 1/1
+urls checked: 173 of 228 (rejected 7, unreachable 9, waiting 55)
+wayback: job 1/520 (thehindu.com); links found so far 0; jobs skipped 0
 archives: The Hindu print archive: next 2006-03-02
 gdelt: query 1/57 ("hero stone" Tamil), month 93
 
