@@ -33,7 +33,8 @@ def _queries(cfg: Config) -> list[str]:
     return list(cfg.search_queries_en) + list(cfg.search_queries_ta)
 
 
-def search(query: str, start: datetime, end: datetime) -> list[dict]:
+def search(query: str, start: datetime, end: datetime, *, retries: int = 3,
+           timeout: float = 60) -> list[dict]:
     params = {
         "query": query,
         "mode": "ArtList",
@@ -43,7 +44,7 @@ def search(query: str, start: datetime, end: datetime) -> list[dict]:
         "startdatetime": start.strftime("%Y%m%d%H%M%S"),
         "enddatetime": end.strftime("%Y%m%d%H%M%S"),
     }
-    r = http.get(API, params=params, timeout=60)
+    r = http.get(API, params=params, timeout=timeout, retries=retries, backoff=3)
     if r is None or r.status_code != 200:
         raise RuntimeError(f"GDELT HTTP {getattr(r, 'status_code', None)}")
     txt = r.text.strip()
@@ -92,15 +93,27 @@ def step(db: DB, cfg: Config) -> bool:
     return True
 
 
-def recent(db: DB, cfg: Config, days: int = 3) -> int:
+def recent(db: DB, cfg: Config, days: int = 3, budget_min: float = 8) -> int:
+    """Latest days only. Stops at the time budget or after repeated failures
+    (GDELT throttles busy clients), so it can never stall a whole run."""
+    import time as _t
+    stop_at = _t.time() + budget_min * 60
     end = datetime.now(timezone.utc).replace(tzinfo=None)
     start = end - timedelta(days=days)
-    total = 0
+    total, fails = 0, 0
     for q in _queries(cfg):
+        if _t.time() > stop_at:
+            log.info("gdelt recent: time budget reached")
+            break
         try:
-            total += db.add_candidates(search(q, start, end))
+            total += db.add_candidates(search(q, start, end, retries=1, timeout=25))
+            fails = 0
         except Exception as e:
+            fails += 1
             log.warning("gdelt recent %r: %s", q, e)
+            if fails >= 3:
+                log.warning("gdelt recent: 3 failures in a row, skipping the rest this run")
+                break
     return total
 
 

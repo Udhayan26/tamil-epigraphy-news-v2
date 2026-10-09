@@ -58,17 +58,22 @@ def decode_gnews(link: str) -> str:
     return link
 
 
-def fetch(cfg: Config, recent_days: int | None = 7) -> list[dict]:
+def fetch(cfg: Config, recent_days: int | None = 7, budget_min: float = 10) -> list[dict]:
+    import time as _t
+    stop_at = _t.time() + budget_min * 60
     from ..match import Matcher
     matcher = Matcher(cfg)
     seen: set[str] = set()
     rows = []
     jobs = [(q, "en") for q in cfg.search_queries_en] + [(q, "ta") for q in cfg.search_queries_ta]
     for q, lang in jobs:
+        if _t.time() > stop_at:
+            log.info("gnews: time budget reached")
+            break
         query = q + (f" when:{recent_days}d" if recent_days else "")
         url = FEEDS[lang].format(q=quote_plus(query))
         try:
-            r = http.get(url, timeout=30)
+            r = http.get(url, timeout=30, retries=2, backoff=3)
             if r is None or r.status_code != 200:
                 continue
             feed = feedparser.parse(r.content)
@@ -97,5 +102,5 @@ def fetch(cfg: Config, recent_days: int | None = 7) -> list[dict]:
     return [r for r in rows if r["url"]]
 
 
-def recent(db: DB, cfg: Config, days: int = 7) -> int:
-    return db.add_candidates(fetch(cfg, days))
+def recent(db: DB, cfg: Config, days: int = 7, budget_min: float = 10) -> int:
+    return db.add_candidates(fetch(cfg, days, budget_min))

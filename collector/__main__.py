@@ -110,15 +110,15 @@ def run_backfill(db: DB, cfg, matcher: Matcher, minutes: float) -> None:
     save(db, cfg)
 
 
-def search_recent(db: DB, cfg) -> None:
-    """Latest news from Google News (Tamil + English) and GDELT."""
+def search_recent(db: DB, cfg, budget_min: float = 18) -> None:
+    """Latest news from Google News (Tamil + English) and GDELT, within a time budget."""
     try:
-        n1 = gnews.recent(db, cfg, days=7)
+        n1 = gnews.recent(db, cfg, days=7, budget_min=budget_min * 0.55)
     except Exception as e:
         log.warning("Google News search failed: %s", e)
         n1 = 0
     try:
-        n2 = gdelt.recent(db, cfg, days=3)
+        n2 = gdelt.recent(db, cfg, days=3, budget_min=budget_min * 0.45)
     except Exception as e:
         log.warning("GDELT search failed: %s", e)
         n2 = 0
@@ -137,9 +137,9 @@ def run_all(db: DB, cfg, matcher: Matcher, minutes: float) -> None:
     """Scheduled job: today's news first (checked straight away), then history."""
     start = time.time()
     add_seed_urls(db)
-    search_recent(db, cfg)
-    # Check the fresh news within the first ~15 minutes so it is never crowded out.
-    verify_until(db, cfg, matcher, start + min(15, minutes * 0.3) * 60)
+    search_recent(db, cfg, budget_min=min(18, minutes * 0.35))
+    # Always give the fresh news some checking time (counted from now, not from start).
+    verify_until(db, cfg, matcher, time.time() + max(5, min(15, minutes * 0.3)) * 60)
     remaining = minutes - (time.time() - start) / 60
     if remaining > 5 and not db.get_state("backfill_done", False):
         run_backfill(db, cfg, matcher, remaining)

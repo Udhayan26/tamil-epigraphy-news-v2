@@ -287,7 +287,7 @@ def test_run_all_checks_todays_news_first(monkeypatch, cfg, tmp_path):
 
     monkeypatch.setattr(cli, "DATA_DIR", tmp_path)
     monkeypatch.setattr(cli, "add_seed_urls", lambda db: 0)
-    monkeypatch.setattr(gn, "recent", lambda db, cfg, days=7: db.add_candidates(
+    monkeypatch.setattr(gn, "recent", lambda db, cfg, days=7, **k: db.add_candidates(
         [{"url": "https://www.dinamani.com/today", "collector": "gnews", "title": "நடுகல் கண்டுபிடிப்பு"}]))
     monkeypatch.setattr(gd, "recent", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("GDELT down")))
     monkeypatch.setattr(http, "get", lambda url, **kw: resp(ARTICLE_TA, 200, url))
@@ -303,3 +303,23 @@ def test_run_all_checks_todays_news_first(monkeypatch, cfg, tmp_path):
 def test_search_queries_loaded(cfg):
     assert any("நடுகல்" in q for q in cfg.search_queries_ta)
     assert len(cfg.search_queries_ta) >= 20 and len(cfg.search_queries_en) >= 25
+
+
+def test_gdelt_recent_gives_up_after_repeated_failures(monkeypatch, cfg, db):
+    calls = []
+
+    def failing(*a, **k):
+        calls.append(1)
+        raise RuntimeError("HTTP 429")
+
+    monkeypatch.setattr(gdelt, "search", failing)
+    assert gdelt.recent(db, cfg) == 0
+    assert len(calls) == 3                       # not all 57 queries
+
+
+def test_gnews_respects_time_budget(monkeypatch, cfg):
+    from collector.sources import gnews
+    calls = []
+    monkeypatch.setattr(http, "get", lambda *a, **k: calls.append(1) or resp("<rss></rss>"))
+    gnews.fetch(cfg, recent_days=7, budget_min=0)
+    assert calls == []                           # budget already used up: no requests
