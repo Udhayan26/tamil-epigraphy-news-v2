@@ -1,14 +1,14 @@
-Last updated: 2026-10-10 08:07 UTC
-new articles today: 2392   |   last 7 days: 4833
-articles kept: 4833
-urls checked: 5719 of 5719 (rejected 824, unreachable 62, waiting 0)
-wayback: job 193/321 (dinakaran.com); links found so far 6898; jobs skipped 14; top: timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638, dinamalar.com 469
+Last updated: 2026-10-10 15:42 UTC
+new articles today: 2808   |   last 7 days: 5249
+articles kept: 5249
+urls checked: 6161 of 6161 (rejected 849, unreachable 63, waiting 0)
+wayback: job 224/321 (puthiyathalaimurai.com); links found so far 7366; jobs skipped 30; top: timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638, dinamalar.com 469
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 2/57 ("Tamil-Brahmi"), month 116
+gdelt: query 3/57 ("Tamil Brahmi" inscription), month 44
 
 Most common reasons pages could not be opened:
       30  live HTTP 404; archive HTTP 404
        9  live HTTP 403; archive HTTP 404
        7  live HTTP 404; archive HTTP 403
        4  live error SSLError; archive had no article text
-       3  live HTTP 404; archive had no article text
+       3  live page had no article text; archive had no article text
