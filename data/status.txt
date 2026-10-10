@@ -1,14 +1,14 @@
-Last updated: 2026-10-09 20:18 UTC
-new articles today: 821   |   last 7 days: 821
-articles kept: 821
-urls checked: 1160 of 1160 (rejected 221, unreachable 118, waiting 0)
-wayback: job 5/321 (thehindu.com/news/cities/chennai/); links found so far 937; jobs skipped 1; top: thehindu.com 937
+Last updated: 2026-10-10 02:17 UTC
+new articles today: 1399   |   last 7 days: 3840
+articles kept: 3840
+urls checked: 4593 of 4593 (rejected 696, unreachable 57, waiting 0)
+wayback: job 93/321 (dinamalar.com/news/tamil-nadu-news/); links found so far 5832; jobs skipped 5; top: timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638, dtnext.in 215
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 1/57 ("hero stone" Tamil), month 107
+gdelt: query 2/57 ("Tamil-Brahmi"), month 43
 
 Most common reasons pages could not be opened:
-     100  live HTTP 200; archive had no article text
-       8  live HTTP 404; archive had no article text
-       5  live HTTP 403; archive HTTP 404
-       1  live page had no article text; archive had no article text
-       1  live HTTP 404; archive HTTP 404
+      29  live HTTP 404; archive HTTP 404
+       7  live HTTP 404; archive HTTP 403
+       7  live HTTP 403; archive HTTP 404
+       4  live error SSLError; archive had no article text
+       3  live HTTP 404; archive had no article text
