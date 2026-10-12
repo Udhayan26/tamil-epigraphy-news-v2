@@ -1,14 +1,14 @@
-Last updated: 2026-10-11 17:12 UTC
-new articles today: 83   |   last 7 days: 5619
-articles kept: 5619
-urls checked: 10959 of 12432 (rejected 5208, unreachable 207, waiting 1473)
-wayback: job 318/321 (archaeology.org); links found so far 13789; jobs skipped 60; top: archaeology.org 6145, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
+Last updated: 2026-10-12 02:34 UTC
+new articles today: 8   |   last 7 days: 5641
+articles kept: 5641
+urls checked: 12643 of 12643 (rejected 6763, unreachable 239, waiting 0)
+wayback: job 318/321 (archaeology.org); links found so far 15617; jobs skipped 60; top: archaeology.org 7973, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
 gdelt: query 4/57 (inscription Tamil Nadu), month 21
 
 Most common reasons pages could not be opened:
-      41  live HTTP 404; archive HTTP 404
-      38  live error ConnectionError; archive had no article text
-      34  live HTTP 403; archive had no article text
-      24  live error ConnectionError; archive HTTP 404
+      64  live error ConnectionError; archive had no article text
+      42  live HTTP 404; archive HTTP 404
+      33  live HTTP 403; archive had no article text
       20  live HTTP 406; archive HTTP 404
+      18  live error ConnectionError; archive HTTP 404
