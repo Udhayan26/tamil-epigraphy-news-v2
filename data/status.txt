@@ -1,7 +1,7 @@
-Last updated: 2026-10-14 21:52 UTC
-new articles today: 7   |   last 7 days: 5683
-articles kept: 5683
-urls checked: 25426 of 25806 (rejected 19343, unreachable 415, waiting 380)
+Last updated: 2026-10-15 03:11 UTC
+new articles today: 0   |   last 7 days: 5682
+articles kept: 5682
+urls checked: 25428 of 25806 (rejected 19346, unreachable 413, waiting 378)
 wayback: job 318/321 (archaeology.org); links found so far 54391; jobs skipped 60; top: archaeology.org 46747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
 gdelt: query 4/57 (inscription Tamil Nadu), month 28
