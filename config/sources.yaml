@@ -123,12 +123,14 @@ wayback:
     - {domain: tamilmurasu.com.sg,            country: Singapore, lang: ta}
     - {domain: bangkokpost.com,               country: Thailand,  lang: en}
     # ---- Middle East / international archaeology news ----
+    # Archaeology-only sites: every address contains 'archaeology', so they are
+    # searched with Tamil-specific address words only (url_slug_terms_specific).
     - {domain: ahram.org.eg,                  country: Egypt,     lang: en}
     - {domain: timesofoman.com,               country: Oman,      lang: en}
-    - {domain: archaeology.org,               country: USA,       lang: en}
-    - {domain: heritagedaily.com,             country: UK,        lang: en}
-    - {domain: arkeonews.net,                 country: Turkey,    lang: en}
-    - {domain: ancient-origins.net,           country: UK,        lang: en}
+    - {domain: archaeology.org,               country: USA,       lang: en, slug_terms: specific}
+    - {domain: heritagedaily.com,             country: UK,        lang: en, slug_terms: specific}
+    - {domain: arkeonews.net,                 country: Turkey,    lang: en, slug_terms: specific}
+    - {domain: ancient-origins.net,           country: UK,        lang: en, slug_terms: specific}
 
 # hindu.com (The Hindu before 2011) is not in the list above: its article
 # addresses are numbers (e.g. /2010/04/14/stories/2010041456210700.htm), so

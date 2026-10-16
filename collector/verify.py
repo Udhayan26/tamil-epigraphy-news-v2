@@ -14,10 +14,14 @@ from .db import DB, now
 from .match import Matcher, is_tamil, make_snippet
 from . import http
 from .sources.util import date_from_url, date_from_ts
+from .urls import tidy
 
 log = logging.getLogger(__name__)
 
-MIN_TEXT = 200   # characters; below this the page probably isn't an article
+MIN_TEXT = 200      # characters; below this the page probably isn't an article
+LEAD_CHARS = 1500   # opening of the article used for foreign sites
+# Countries whose sites are treated as "home" sites (full article text is matched).
+HOME = {"India", "Sri Lanka", "Unknown", "Reference", "Discussion group", "Google News (undecoded)"}
 TITLE_TRUST = ("gnews", "archive:")   # collectors whose headline already matched
 
 
@@ -88,7 +92,7 @@ def country_for(domain: str, cfg: Config) -> str:
 
 
 def _process(row, cfg: Config, matcher: Matcher) -> tuple[str, dict | None, str]:
-    url = row["url"]
+    url = tidy(row["url"])
     if "news.google.com" in url:
         # Undecoded Google News link: the page is only a Google redirect, so judge by headline.
         ex, arch, err = None, "", "google news link not decoded"
@@ -97,13 +101,20 @@ def _process(row, cfg: Config, matcher: Matcher) -> tuple[str, dict | None, str]
     title = (ex or {}).get("title") or row["hint_title"] or ""
     text = (ex or {}).get("text", "")
     basis = "full-text"
+    domain0 = urlparse(url).netloc.lower().removeprefix("www.")
+    # International / general archaeology sites list other stories in sidebars, so the
+    # keywords must appear in the headline or the opening of the article itself.
+    lead_only = country_for(domain0, cfg) not in HOME
     if ex:
+        if lead_only and not is_tamil(text[:500]):
+            text = text[:LEAD_CHARS]
         res = matcher.accept(title, text)
         if not res and not arch and row["wayback_ts"]:
             # Live page may be a paywall / cookie screen: try the saved archive copy.
             ex2, arch2 = _fetch_archive(url, row["wayback_ts"])
             if ex2:
-                res2 = matcher.accept(ex2["title"] or title, ex2["text"])
+                t2 = ex2["text"][:LEAD_CHARS] if lead_only else ex2["text"]
+                res2 = matcher.accept(ex2["title"] or title, t2)
                 if res2:
                     ex, arch, res = ex2, arch2, res2
                     title, text = ex2["title"] or title, ex2["text"]

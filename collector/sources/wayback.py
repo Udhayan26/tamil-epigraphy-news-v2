@@ -58,9 +58,12 @@ def plan(cfg: Config) -> list[dict]:
     ta_terms = [t for t in cfg.url_slug_terms if "%" in t]
     jobs = []
     for d in cfg.wayback.get("domains", []):
-        terms = list(en_terms)
-        if d.get("lang") == "ta":
-            terms += ta_terms
+        if d.get("slug_terms") == "specific":
+            terms = list(cfg.url_slug_terms_specific)
+        else:
+            terms = list(en_terms)
+            if d.get("lang") == "ta":
+                terms += ta_terms
         prefixes = d.get("prefixes") or ([d["path_prefix"].split("/", 1)[1]]
                                          if d.get("path_prefix") else [None])
         for prefix in prefixes:
@@ -87,6 +90,7 @@ def _params(job: dict, cfg: Config) -> dict:
 
 
 PAGE_LIMIT = 3000      # rows per request
+MAX_URL_LEN = 300      # longer addresses are photo/credit pages, not articles
 STATE = "wayback_v3"   # v3: site sections + resume-key paging (whole-site queries hit HTTP 504)
 
 
@@ -132,7 +136,7 @@ def step(db: DB, cfg: Config) -> bool:
         rows, resume = parse_cdx(r.text)
         cands = []
         for ts, url, *_ in rows:
-            if SKIP_EXT.search(url) or SKIP_PATH.search(url):
+            if len(url) > MAX_URL_LEN or SKIP_EXT.search(url) or SKIP_PATH.search(url):
                 continue
             url = canonical(url)
             cands.append({"url": url, "collector": f"wayback:{job['domain']}",

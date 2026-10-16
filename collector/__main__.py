@@ -170,6 +170,78 @@ def migrate(db: DB) -> None:
         db.conn.commit()
         db.set_state("migr_wayback_recheck", True)
         log.info("marked %d image links; re-queued %d history links for archive re-check", n1, n2)
+    if not db.get_state("migr_slim_db"):
+        # v2.3: archaeology.org flooded the queue (every address contains 'archaeology'),
+        # and very long photo-credit addresses bloated the database past GitHub's 100 MB limit.
+        n1 = db.conn.execute(
+            "DELETE FROM candidates WHERE status != 'matched' AND "
+            "(collector IN ('wayback:archaeology.org','wayback:heritagedaily.com',"
+            "'wayback:arkeonews.net','wayback:ancient-origins.net') OR length(url) > 300)").rowcount
+        st = db.get_state("wayback_v3")
+        if st:
+            st["resume"] = None          # keyword list for these sites changed
+            db.set_state("wayback_v3", st)
+        db.conn.commit()
+        db.set_state("migr_slim_db", True)
+        log.info("removed %d unneeded links from the database", n1)
+    if not db.get_state("migr_tidy_urls"):
+        # v2.3: merge mirror/port addresses; re-check international sites with the stricter rule.
+        from .urls import tidy
+        merged = 0
+        for table in ("candidates", "articles"):
+            for (u,) in db.conn.execute(f"SELECT url FROM {table}").fetchall():
+                t = tidy(u)
+                if t != u:
+                    if db.conn.execute(f"SELECT 1 FROM {table} WHERE url=?", (t,)).fetchone():
+                        db.conn.execute(f"DELETE FROM {table} WHERE url=?", (u,))
+                        merged += 1
+                    else:
+                        db.conn.execute(f"UPDATE {table} SET url=? WHERE url=?", (t, u))
+                        if table == "articles":
+                            from urllib.parse import urlparse
+                            db.conn.execute("UPDATE articles SET domain=? WHERE url=?",
+                                            (urlparse(t).netloc.lower().removeprefix("www."), t))
+        intl = [r[0] for r in db.conn.execute(
+            "SELECT url FROM articles WHERE source_country IN "
+            "('USA','UK','Turkey','Egypt','Oman','Thailand','Malaysia','Singapore') "
+            "AND language != 'Tamil'").fetchall()]
+        for u in intl:
+            db.conn.execute("DELETE FROM articles WHERE url=?", (u,))
+            db.conn.execute("UPDATE candidates SET status='pending', tries=0 WHERE url=?", (u,))
+        db.conn.commit()
+        db.set_state("migr_tidy_urls", True)
+        log.info("merged %d duplicate addresses; re-checking %d international articles", merged, len(intl))
+
+
+def open_db(path) -> DB:
+    """The repository stores the database gzip-compressed (GitHub rejects files over
+    100 MB). Unpack it if the compressed copy is the newer one."""
+    import gzip, shutil
+    from pathlib import Path
+    path = Path(path)
+    gz = path.with_name(path.name + ".gz")
+    if gz.exists() and (not path.exists() or gz.stat().st_mtime > path.stat().st_mtime):
+        with gzip.open(gz, "rb") as src, open(path, "wb") as dst:
+            shutil.copyfileobj(src, dst)
+        log.info("unpacked %s", gz.name)
+    return DB(path)
+
+
+def pack_db(db: DB) -> None:
+    """Compact and write the compressed copy that is committed to the repository."""
+    import gzip, shutil, os
+    from pathlib import Path
+    path = Path(db.conn.execute("PRAGMA database_list").fetchone()[2])
+    db.conn.commit()
+    db.conn.execute("VACUUM")
+    db.conn.close()
+    gz = path.with_name(path.name + ".gz")
+    tmp = gz.with_suffix(".gz.tmp")
+    with open(path, "rb") as src, gzip.open(tmp, "wb", compresslevel=9) as dst:
+        shutil.copyfileobj(src, dst)
+    os.replace(tmp, gz)
+    log.info("database %.1f MB, compressed copy %.1f MB",
+             path.stat().st_size / 1e6, gz.stat().st_size / 1e6)
 
 
 def main(argv=None) -> int:
@@ -188,7 +260,7 @@ def main(argv=None) -> int:
 
     from pathlib import Path
     cfg = load_config()
-    db = DB(Path(args.db))
+    db = open_db(args.db)
     matcher = Matcher(cfg)
     migrate(db)
 
@@ -205,6 +277,7 @@ def main(argv=None) -> int:
         save(db, cfg)
     print(status(db, cfg))
     db.set_state("last_status", status(db, cfg))
+    pack_db(db)
     return 0
 
 

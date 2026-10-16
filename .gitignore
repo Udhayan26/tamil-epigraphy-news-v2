@@ -3,3 +3,7 @@ __pycache__/
 .pytest_cache/
 .venv/
 *.sqlite-journal
+
+# The database is committed compressed (data/collector.sqlite.gz); GitHub rejects files over 100 MB.
+data/collector.sqlite
+*.gz.tmp

@@ -29,6 +29,7 @@ class Config:
     search_queries_en: list[str]
     search_queries_ta: list[str]
     url_slug_terms: list[str]
+    url_slug_terms_specific: list[str]
     wayback: dict
     date_archives: list[dict]
     tld_country: dict
@@ -69,6 +70,7 @@ def load_config() -> Config:
         search_queries_en=sq.get("en") or [],
         search_queries_ta=sq.get("ta") or [],
         url_slug_terms=slug_terms,
+        url_slug_terms_specific=list(kw.get("url_slug_terms_specific") or []),
         wayback=wayback,
         date_archives=src.get("date_archives") or [],
         tld_country=src.get("tld_country") or {},

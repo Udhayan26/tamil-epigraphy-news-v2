@@ -290,6 +290,32 @@ search_queries:
 # English words likely to appear in news URL slugs. Used to pre-filter the
 # Wayback Machine URL index (20-year backfill). Tamil slugs are added
 # automatically from the Tamil terms above (percent-encoded).
+# Used instead of url_slug_terms for archaeology-only websites (sources.yaml
+# 'slug_terms: specific'), where generic words like 'archaeology' match every page.
+url_slug_terms_specific:
+  - tamil
+  - keeladi
+  - keezhadi
+  - adichanallur
+  - sivakalai
+  - kodumanal
+  - porunthal
+  - alagankulam
+  - korkai
+  - arikamedu
+  - mayiladumparai
+  - chola
+  - pandya
+  - pallava
+  - brahmi
+  - vatteluttu
+  - hero-stone
+  - nadukal
+  - south-india
+  - berenike
+  - sri-lanka
+  - jaffna
+
 url_slug_terms:
   - hero-stone
   - herostone

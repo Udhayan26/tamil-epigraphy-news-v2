@@ -365,3 +365,52 @@ def test_live_paywall_falls_back_to_archive(monkeypatch, cfg, db, matcher):
     verify.verify_batch(db, cfg, matcher, workers=1)
     a = db.conn.execute("SELECT * FROM articles").fetchone()
     assert a is not None and a["archive_url"].startswith("https://web.archive.org/web/20200101000000/")
+
+
+@pytest.mark.parametrize("raw,expected", [
+    ("http://newindianexpress.com:80/states/tamil-nadu/x.html", "https://newindianexpress.com/states/tamil-nadu/x.html"),
+    ("https://image.nakkheeran.in/special-articles/x", "https://www.nakkheeran.in/special-articles/x"),
+    ("https://www.dinamalar.com/news_detail.asp?id=1433752#top", "https://www.dinamalar.com/news_detail.asp?id=1433752"),
+])
+def test_tidy(raw, expected):
+    from collector.urls import tidy
+    assert tidy(raw) == expected
+
+
+def test_sidebar_mentions_do_not_match_foreign_sites(monkeypatch, cfg, db, matcher):
+    body = ("<p>" + "A Viking town in Scandinavia attracted traders from across northern Europe. " * 40
+            + "</p><p>Related: Tamil-Brahmi inscription found in Sri Lanka. Rock art in Tamil Nadu.</p>")
+    page = f"<html><head><title>Viking Town</title></head><body><article>{body}</article></body></html>"
+    monkeypatch.setattr(http, "get", lambda url, **kw: resp(page, 200, url))
+    db.add_candidate("https://www.archaeology.org/news/viking-town", "wayback:archaeology.org")
+    db.add_candidate("https://www.thehindu.com/news/viking-town", "wayback:thehindu.com")
+    db.commit()
+    verify.verify_batch(db, cfg, matcher, workers=1)
+    kept = {r["url"] for r in db.conn.execute("SELECT url FROM articles")}
+    assert "https://www.archaeology.org/news/viking-town" not in kept   # foreign site: lead only
+    assert "https://www.thehindu.com/news/viking-town" in kept          # home site: full text
+
+
+def test_archaeology_sites_use_specific_terms(cfg):
+    jobs = [j for j in wayback.plan(cfg) if j["domain"] == "archaeology.org"]
+    assert jobs and "archaeolog" not in jobs[0]["regex"] and "keeladi" in jobs[0]["regex"]
+
+
+def test_long_addresses_skipped(monkeypatch, cfg, db):
+    long_url = "https://www.thehindu.com/news/national/tamil-nadu/" + "hero-stone-" * 40
+    rows = [["timestamp", "original"], ["20200101000000", long_url]]
+    monkeypatch.setattr(http, "get", lambda *a, **k: resp(json.dumps(rows)))
+    wayback.step(db, cfg)
+    assert db.conn.execute("SELECT COUNT(*) FROM candidates").fetchone()[0] == 0
+
+
+def test_database_pack_and_unpack(tmp_path):
+    import collector.__main__ as cli
+    db = DB(tmp_path / "c.sqlite")
+    db.add_candidate("https://example.in/hero-stone", "seed")
+    db.commit()
+    cli.pack_db(db)
+    assert (tmp_path / "c.sqlite.gz").exists()
+    (tmp_path / "c.sqlite").unlink()                       # as on GitHub: only the .gz is stored
+    db2 = cli.open_db(tmp_path / "c.sqlite")
+    assert db2.conn.execute("SELECT COUNT(*) FROM candidates").fetchone()[0] == 1

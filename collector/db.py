@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import sqlite3
+
+from .urls import tidy
 import time
 from pathlib import Path
 
@@ -72,6 +74,7 @@ class DB:
     # ---- candidates ----
     def add_candidate(self, url: str, collector: str, hint_title: str = "",
                       hint_date: str = "", wayback_ts: str = "") -> bool:
+        url = tidy(url)
         cur = self.conn.execute(
             "INSERT OR IGNORE INTO candidates(url,collector,found_at,hint_title,hint_date,wayback_ts) "
             "VALUES(?,?,?,?,?,?)",
