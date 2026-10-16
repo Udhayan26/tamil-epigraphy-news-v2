@@ -18,7 +18,7 @@ from .config import DATA_DIR, load_config
 from .db import DB
 from .export import export
 from .match import Matcher
-from .sources import date_archive, gdelt, gnews, wayback
+from .sources import date_archive, gdelt, gnews, papers, wayback
 from .verify import verify_batch, verify_until
 
 log = logging.getLogger("collector")
@@ -36,6 +36,7 @@ def status(db: DB, cfg) -> str:
         wayback.progress(db, cfg),
         date_archive.progress(db, cfg),
         gdelt.progress(db, cfg),
+        papers.progress(db, cfg),
     ]
     return "\n".join(lines)
 
@@ -56,7 +57,8 @@ def save(db: DB, cfg) -> None:
     """Write the spreadsheet plus a plain-text progress report (data/status.txt)."""
     res = export(db, cfg, DATA_DIR)
     txt = (time.strftime("Last updated: %Y-%m-%d %H:%M UTC\n", time.gmtime())
-           + f"new articles today: {res['new_today']}   |   last 7 days: {res['new_week']}\n"
+           + f"new articles today: {res['new_today']}   |   last 7 days: {res['new_week']}"
+           + f"   |   research papers: {res['papers']}\n"
            + status(db, cfg))
     errs = db.conn.execute(
         "SELECT last_error, COUNT(*) n FROM candidates WHERE status='failed' "
@@ -79,6 +81,8 @@ def run_backfill(db: DB, cfg, matcher: Matcher, minutes: float) -> None:
         ("wayback", lambda: wayback.step(db, cfg)),
         ("archives", lambda: date_archive.step(db, cfg, matcher, days_per_step=3)),
         ("gdelt", lambda: gdelt.step(db, cfg)),
+        ("papers", lambda: papers.openalex_step(db, cfg, matcher)),
+        ("journals", lambda: papers.oai_step(db, cfg, matcher)),
     ]
     active = {name for name, _ in collectors}
     i = 0
@@ -125,6 +129,21 @@ def search_recent(db: DB, cfg, budget_min: float = 18) -> None:
     log.info("recent news: %d new links from Google News, %d from GDELT", n1, n2)
 
 
+def search_recent_papers(db: DB, cfg, matcher: Matcher, budget_min: float = 8) -> None:
+    """New research papers (OpenAlex) and new issues of the Tamil journals."""
+    try:
+        n = papers.openalex_recent(db, cfg, matcher, days=10, budget_min=budget_min * 0.6)
+        log.info("recent papers: %d kept", n)
+    except Exception as e:
+        log.warning("OpenAlex search failed: %s", e)
+    stop_at = time.time() + budget_min * 0.4 * 60
+    try:
+        while time.time() < stop_at and papers.oai_step(db, cfg, matcher):
+            pass
+    except Exception as e:
+        log.warning("journal harvest failed: %s", e)
+
+
 def run_daily(db: DB, cfg, matcher: Matcher, minutes: float) -> None:
     deadline = time.time() + minutes * 60
     add_seed_urls(db)
@@ -138,6 +157,7 @@ def run_all(db: DB, cfg, matcher: Matcher, minutes: float) -> None:
     start = time.time()
     add_seed_urls(db)
     search_recent(db, cfg, budget_min=min(18, minutes * 0.35))
+    search_recent_papers(db, cfg, matcher, budget_min=min(8, minutes * 0.15))
     # Always give the fresh news some checking time (counted from now, not from start).
     verify_until(db, cfg, matcher, time.time() + max(5, min(15, minutes * 0.3)) * 60)
     remaining = minutes - (time.time() - start) / 60

@@ -290,6 +290,48 @@ search_queries:
 # English words likely to appear in news URL slugs. Used to pre-filter the
 # Wayback Machine URL index (20-year backfill). Tamil slugs are added
 # automatically from the Tamil terms above (percent-encoded).
+# Searches for research papers / journal articles (OpenAlex). Each result is still
+# checked against the keyword groups and the Tamil-context rule above.
+paper_queries:
+  - Tamil inscription
+  - Tamil epigraphy
+  - Tamil-Brahmi
+  - Tamil Brahmi script
+  - Vatteluttu
+  - hero stone Tamil Nadu
+  - memorial stones South India
+  - Tamil Nadu archaeology
+  - Tamil Nadu excavation
+  - Keeladi
+  - Keezhadi
+  - Adichanallur
+  - Sivakalai
+  - Kodumanal
+  - Porunthal
+  - Alagankulam
+  - Korkai
+  - Arikamedu
+  - Mayiladumparai
+  - Chola inscriptions
+  - Pandya inscriptions
+  - Pallava inscriptions
+  - Tamil copper plates
+  - rock art Tamil Nadu
+  - rock paintings South India
+  - megalithic burials Tamil Nadu
+  - Sangam age archaeology
+  - Iron Age Tamil Nadu
+  - Tamil graffiti potsherds
+  - Tamil inscriptions Sri Lanka
+  - Tamil inscriptions Southeast Asia
+  - Tamil merchants Red Sea Berenike
+  - Jain beds Tamil-Brahmi
+  - Indus script Tamil Nadu graffiti
+  - தமிழ் கல்வெட்டு
+  - நடுகல்
+  - தொல்லியல்
+  - பாறை ஓவியம்
+
 # Used instead of url_slug_terms for archaeology-only websites (sources.yaml
 # 'slug_terms: specific'), where generic words like 'archaeology' match every page.
 url_slug_terms_specific:

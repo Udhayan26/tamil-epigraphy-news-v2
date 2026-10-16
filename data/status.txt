@@ -1,10 +1,11 @@
-Last updated: 2026-10-16 09:03 UTC
-new articles today: 67   |   last 7 days: 5565
+Last updated: 2026-10-16 11:22 UTC
+new articles today: 67   |   last 7 days: 5565   |   research papers: 0
 articles kept: 5565
 urls checked: 6693 of 6693 (rejected 990, unreachable 140, waiting 0)
-wayback: job 321/321 (ancient-origins.net); links found so far 60426; jobs skipped 61; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
+wayback: job 321/473 (ancient-origins.net); links found so far 60426; jobs skipped 61; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
 gdelt: query 4/57 (inscription Tamil Nadu), month 31
+research papers kept: 0 (OpenAlex history query 1/38; journals: 3)
 
 Most common reasons pages could not be opened:
       39  live HTTP 404; archive HTTP 404

@@ -228,7 +228,7 @@ def test_verify_and_export(monkeypatch, cfg, db, matcher, tmp_path):
     res = export(db, cfg, out)
     assert res["articles"] == 3
     wb = openpyxl.load_workbook(out / "articles.xlsx")
-    assert wb.sheetnames == ["Articles", "New (last 7 days)", "By keyword", "By year", "By source", "By place"]
+    assert wb.sheetnames == ["Articles", "Research papers", "New (last 7 days)", "By keyword", "By year", "By source", "By place"]
     assert wb["New (last 7 days)"].max_row == 4          # all found today
     assert len(list((out / "daily").glob("*.csv"))) == 1
     ws = wb["Articles"]
@@ -269,6 +269,9 @@ def test_backfill_checks_links_even_when_queue_small(monkeypatch, cfg, tmp_path)
     monkeypatch.setattr(wb, "step", slow_wayback)
     monkeypatch.setattr(da, "step", lambda *a, **k: False)
     monkeypatch.setattr(gd, "step", lambda *a, **k: False)
+    from collector.sources import papers as pp
+    monkeypatch.setattr(pp, "openalex_step", lambda *a, **k: False)
+    monkeypatch.setattr(pp, "oai_step", lambda *a, **k: False)
     pages = {"https://www.etvbharat.com/hero": ARTICLE_EN}
     pages.update({f"https://www.dinamani.com/ta{i}": ARTICLE_TA for i in range(1, 6)})
     monkeypatch.setattr(http, "get", lambda url, **kw: resp(pages.get(url, ""), 200 if url in pages else 404, url))
@@ -291,6 +294,7 @@ def test_run_all_checks_todays_news_first(monkeypatch, cfg, tmp_path):
         [{"url": "https://www.dinamani.com/today", "collector": "gnews", "title": "நடுகல் கண்டுபிடிப்பு"}]))
     monkeypatch.setattr(gd, "recent", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("GDELT down")))
     monkeypatch.setattr(http, "get", lambda url, **kw: resp(ARTICLE_TA, 200, url))
+    monkeypatch.setattr(cli, "search_recent_papers", lambda *a, **k: None)
     ran = {}
     monkeypatch.setattr(cli, "run_backfill", lambda db, cfg, m, minutes: ran.setdefault("backfill", minutes))
 
@@ -414,3 +418,102 @@ def test_database_pack_and_unpack(tmp_path):
     (tmp_path / "c.sqlite").unlink()                       # as on GitHub: only the .gz is stored
     db2 = cli.open_db(tmp_path / "c.sqlite")
     assert db2.conn.execute("SELECT COUNT(*) FROM candidates").fetchone()[0] == 1
+
+
+# ---------------- research papers ----------------
+OPENALEX_PAGE = {
+    "meta": {"next_cursor": "NEXT"},
+    "results": [
+        {"id": "https://openalex.org/W1", "doi": "https://doi.org/10.1/abc",
+         "title": "Tamil-Brahmi inscriptions from Keeladi excavations",
+         "publication_year": 2021, "publication_date": "2021-05-01",
+         "authorships": [{"author": {"display_name": "K. Rajan"}}],
+         "primary_location": {"landing_page_url": "https://journal.example/abc",
+                              "source": {"display_name": "Journal of Tamil Studies"}},
+         "open_access": {"oa_url": "https://journal.example/abc.pdf"},
+         "abstract_inverted_index": {"Sherds": [0], "from": [1], "Sivaganga,": [2], "Tamil": [3], "Nadu": [4]}},
+        {"id": "https://openalex.org/W2", "title": "Roman villas in Kent", "publication_year": 2020,
+         "abstract_inverted_index": {"Excavation": [0], "in": [1], "England": [2]}},
+    ],
+}
+
+OAI_XML = """<?xml version="1.0"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">
+ <ListRecords>
+  <record><header><identifier>oai:irjt:article/2057</identifier></header>
+   <metadata><oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:title>நடுகற்கள் காட்டும் சமூக வரலாறு</dc:title>
+    <dc:creator>முனைவர் அ. குமார்</dc:creator>
+    <dc:description>தருமபுரி மாவட்ட நடுகல் கல்வெட்டுகள் பற்றிய ஆய்வு.</dc:description>
+    <dc:date>2023-06-15</dc:date>
+    <dc:identifier>https://irjt.iorpress.org/index.php/irjt/article/view/2057</dc:identifier>
+    <dc:identifier>https://doi.org/10.34256/irjt2357</dc:identifier>
+   </oai_dc:dc></metadata></record>
+  <record><header status="deleted"><identifier>oai:irjt:article/1</identifier></header></record>
+  <resumptionToken>TOKEN2</resumptionToken>
+ </ListRecords>
+</OAI-PMH>"""
+
+
+def test_openalex_step_saves_matching_papers(monkeypatch, cfg, db, matcher):
+    from collector.sources import papers
+    monkeypatch.setattr(http, "get", lambda *a, **k: SimpleNamespace(
+        status_code=200, json=lambda: OPENALEX_PAGE, text=""))
+    assert papers.openalex_step(db, cfg, matcher)
+    rows = db.conn.execute("SELECT * FROM papers").fetchall()
+    assert len(rows) == 1
+    p = rows[0]
+    assert p["venue"] == "Journal of Tamil Studies" and p["doi"] == "10.1/abc"
+    assert p["oa_url"].endswith(".pdf") and "Rajan" in p["authors"]
+    assert "Sivaganga" in p["abstract"]
+    assert db.get_state("papers_openalex")["cursor"] == "NEXT"
+
+
+def test_parse_oai_tamil_journal(cfg, db, matcher):
+    from collector.sources import papers
+    recs, token = papers.parse_oai(OAI_XML, "IRJT")
+    assert token == "TOKEN2" and len(recs) == 1
+    r = recs[0]
+    assert r["year"] == 2023 and r["doi"] == "10.34256/irjt2357"
+    assert r["url"].endswith("/view/2057")
+    assert papers.save_paper(db, matcher, r)
+    p = db.conn.execute("SELECT * FROM papers").fetchone()
+    assert p["language"] == "Tamil" and "hero_stone" in json.loads(p["groups"])
+
+
+def test_oai_step_resumes_and_finishes(monkeypatch, cfg, db, matcher):
+    from collector.sources import papers
+    pages = [OAI_XML, OAI_XML.replace("<resumptionToken>TOKEN2</resumptionToken>", "")]
+    calls = []
+
+    def fake_get(url, params=None, **kw):
+        calls.append(dict(params))
+        return resp(pages[min(len(calls) - 1, 1)])
+
+    monkeypatch.setattr(http, "get", fake_get)
+    first = cfg.journals[0]["name"]
+    assert papers.oai_step(db, cfg, matcher)
+    assert db.get_state(f"oai:{first}")["token"] == "TOKEN2"
+    assert papers.oai_step(db, cfg, matcher)
+    assert calls[1]["resumptionToken"] == "TOKEN2"
+    st = db.get_state(f"oai:{first}")
+    assert st["token"] is None and st["done_today"]
+
+
+def test_export_has_papers_sheet(monkeypatch, cfg, db, matcher, tmp_path):
+    from collector.sources import papers
+    recs, _ = papers.parse_oai(OAI_XML, "IRJT")
+    papers.save_paper(db, matcher, recs[0])
+    db.commit()
+    res = export(db, cfg, tmp_path)
+    assert res["papers"] == 1
+    wb = openpyxl.load_workbook(tmp_path / "articles.xlsx")
+    assert wb.sheetnames[1] == "Research papers"
+    assert wb["Research papers"].max_row == 2
+    assert (tmp_path / "papers.csv").exists()
+
+
+def test_new_sites_added_at_end_keep_history_position(cfg):
+    jobs = wayback.plan(cfg)
+    idx = {j["domain"]: i for i, j in reversed(list(enumerate(jobs)))}
+    assert idx["ancient-origins.net"] < idx["thefederal.com"] < idx["tamilwin.com"]

@@ -1,12 +1,13 @@
 name: Collect news
 
-# Every 6 hours (05:30, 11:30, 17:30, 23:30 India time):
-#   1. search today's news (Google News Tamil + English, GDELT) and check it
-#   2. continue the 20-year history collection where the last run stopped
-# Once the history is complete, each run only does step 1 (about 15 minutes).
+# Every morning at 05:15 India time (23:45 UTC the day before):
+#   1. today's news (Google News Tamil + English, GDELT) and new research papers
+#      (OpenAlex + Tamil journals), checked first
+#   2. continue the history collection (newspaper archives, older papers)
+# Once the history is complete, a run takes about 20-30 minutes.
 on:
   schedule:
-    - cron: "0 0,6,12,18 * * *"
+    - cron: "45 23 * * *"
   workflow_dispatch:
     inputs:
       minutes:

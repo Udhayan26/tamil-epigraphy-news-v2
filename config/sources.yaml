@@ -132,6 +132,53 @@ wayback:
     - {domain: arkeonews.net,                 country: Turkey,    lang: en, slug_terms: specific}
     - {domain: ancient-origins.net,           country: UK,        lang: en, slug_terms: specific}
 
+    # ---- Added in v2.4: more newspapers, TV news sites and magazines ----
+    # Tamil
+    - {domain: tamil.hindustantimes.com,      country: India, lang: ta}
+    - {domain: tamil.asianetnews.com,         country: India, lang: ta}
+    - {domain: zeenews.india.com,             country: India, lang: ta, prefixes: [tamil/]}
+    - {domain: thanthitv.com,                 country: India, lang: ta}
+    - {domain: kalaignarseithigal.com,        country: India, lang: ta}
+    - {domain: malaimurasu.com,               country: India, lang: ta}
+    - {domain: theekkathir.in,                country: India, lang: ta}
+    - {domain: kumudam.com,                   country: India, lang: ta}
+    - {domain: kungumam.co.in,                country: India, lang: ta}
+    - {domain: minnambalam.com,               country: India, lang: ta}
+    - {domain: tamil.abplive.com,             country: India, lang: ta}
+    - {domain: tamil.boldsky.com,             country: India, lang: ta}
+    - {domain: dinasuvadu.com,                country: India, lang: ta}
+    - {domain: varalaaru.com,                 country: India, lang: ta}   # Tamil history e-journal
+    - {domain: keetru.com,                    country: India, lang: ta}   # magazines collection
+    - {domain: solvanam.com,                  country: India, lang: ta}   # literary magazine
+    # English
+    - {domain: thefederal.com,                country: India, lang: en}
+    - {domain: scroll.in,                     country: India, lang: en}
+    - {domain: theprint.in,                   country: India, lang: en}
+    - {domain: thewire.in,                    country: India, lang: en}
+    - {domain: outlookindia.com,              country: India, lang: en}
+    - {domain: downtoearth.org.in,            country: India, lang: en}
+    - {domain: swarajyamag.com,               country: India, lang: en}
+    - {domain: newstodaynet.com,              country: India, lang: en}
+    - domain: hindustantimes.com
+      country: India
+      lang: en
+      prefixes: [cities/chennai-news/, india-news/]
+    - domain: business-standard.com
+      country: India
+      lang: en
+      prefixes: [india-news/]
+    - {domain: madrascourier.com,             country: India, lang: en}
+    - {domain: sahapedia.org,                 country: India, lang: en}   # heritage encyclopedia
+    - {domain: livehistoryindia.com,          country: India, lang: en}   # heritage magazine
+    - {domain: peepultree.world,              country: India, lang: en}   # Live History India (new name)
+    - {domain: thesouthfirst.com,             country: India, lang: en}
+    - {domain: lokmattimes.com,               country: India, lang: en}
+    - {domain: ceylontoday.lk,                country: Sri Lanka, lang: en}
+    - {domain: themorning.lk,                 country: Sri Lanka, lang: en}
+    - {domain: uthayan.com,                   country: Sri Lanka, lang: ta}
+    - {domain: tamilwin.com,                  country: Sri Lanka, lang: ta}
+    - {domain: makkalosai.com.my,             country: Malaysia,  lang: ta}
+
 # hindu.com (The Hindu before 2011) is not in the list above: its article
 # addresses are numbers (e.g. /2010/04/14/stories/2010041456210700.htm), so
 # keyword matching on the address cannot work. The print-archive headline
@@ -211,3 +258,17 @@ places:
   - {name: Myanmar,     terms: [myanmar, burma, மியான்மர்]}
   - {name: China,       terms: [china, quanzhou, சீன]}
   - {name: Cambodia,    terms: [cambodia, கம்போடிய, angkor]}
+
+
+# Research papers and journal articles.
+papers:
+  from_year: 2000
+  # Open-access journals harvested through their OAI-PMH address (standard in OJS
+  # journal software: <journal site>/index.php/<journal>/oai). Add more the same way.
+  journals:
+    - name: International Research Journal of Tamil
+      oai: https://irjt.iorpress.org/index.php/irjt/oai
+    - name: Shanlax International Journal of Tamil Research
+      oai: https://www.shanlaxjournals.in/journals/index.php/tamil/oai
+    - name: Tamil Peraivu (University of Malaya)
+      oai: https://tamilperaivu.um.edu.my/index.php/tamilperaivu/oai

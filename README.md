@@ -14,10 +14,11 @@ websites, going back about 20 years, and keeps the collection updated daily.
 | [`data/articles.xlsx`](data/articles.xlsx) | All articles (Excel). Click it, then **Download** (⬇) |
 | [`data/articles.csv`](data/articles.csv) | Same data as CSV (opens in Excel / Google Sheets) |
 | [`data/daily/`](data/daily) | One CSV per day with only that day's **new** articles |
+| [`data/papers.csv`](data/papers.csv) | Research papers and journal articles (also a sheet in the Excel file) |
 | [`data/status.txt`](data/status.txt) | Progress report: new today, last 7 days, history progress |
 | `data/collector.sqlite` | Internal database (progress + every link checked) |
 
-The Excel file has these sheets: **Articles** (everything), **New (last 7 days)**, and
+The Excel file has these sheets: **Articles** (news, everything), **Research papers**, **New (last 7 days)**, and
 counts **By keyword**, **By year**, **By source** and **By place**.
 
 Columns: Date · Year · Title · Keyword group (Tamil/English) · Matched terms ·
@@ -32,7 +33,7 @@ Snippet · Match basis · Found via · Found on.
 
 ## How it works
 
-Every 6 hours (05:30, 11:30, 17:30, 23:30 IST) GitHub Actions runs one job:
+Every morning at 05:15 IST GitHub Actions runs one job:
 
 1. **Today's news**: Google News (Tamil and English editions, ~55 search phrases
    such as `நடுகல் கண்டுபிடிப்பு`, `சோழர் கால கல்வெட்டு`, `"hero stone" Tamil`)
@@ -44,12 +45,19 @@ Every 6 hours (05:30, 11:30, 17:30, 23:30 IST) GitHub Actions runs one job:
      Singapore, Egypt and Oman papers, archaeology news sites).
    * **The Hindu print archive** headline lists since 2006.
    * **GDELT** month by month since 2017.
-3. Every link is opened and kept only if the keywords really appear **and** it has a
+3. **Research papers**: OpenAlex (open index of journals, conference papers,
+   books and theses; ~38 searches such as `Tamil-Brahmi`, `Keeladi`, `hero stone
+   Tamil Nadu`) and Tamil journals harvested directly (see `papers:` in
+   `config/sources.yaml`).
+4. Every link is opened and kept only if the keywords really appear **and** it has a
    Tamil connection (Tamil Nadu place, Chola/Pandya/Pallava, Tamil script, Sri Lanka
    Tamil sites, etc.).
 
-When the history is complete, runs only do step 1 (about 15 minutes).
+When the history is complete, runs only do step 1 (about 20-30 minutes).
 To start a run by hand: **Actions** tab → **Collect news** → **Run workflow**.
+
+The database is stored compressed (`data/collector.sqlite.gz`) because GitHub
+rejects files over 100 MB.
 
 ## Changing keywords or websites
 

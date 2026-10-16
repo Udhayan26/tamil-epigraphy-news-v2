@@ -40,6 +40,25 @@ CREATE TABLE IF NOT EXISTS articles (
     fetched_at     TEXT
 );
 
+CREATE TABLE IF NOT EXISTS papers (
+    id             TEXT PRIMARY KEY,   -- OpenAlex id or OAI identifier
+    title          TEXT,
+    authors        TEXT,
+    year           INTEGER,
+    pub_date       TEXT,
+    venue          TEXT,               -- journal / conference / publisher
+    doi            TEXT,
+    url            TEXT,
+    oa_url         TEXT,               -- free full-text link if any
+    abstract       TEXT,
+    groups         TEXT,
+    matched_terms  TEXT,
+    places         TEXT,
+    language       TEXT,
+    source         TEXT,
+    found_at       TEXT
+);
+
 CREATE TABLE IF NOT EXISTS state (
     key   TEXT PRIMARY KEY,
     value TEXT

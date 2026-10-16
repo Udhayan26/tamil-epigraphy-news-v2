@@ -116,9 +116,65 @@ def export(db: DB, cfg: Config, out_dir: Path) -> dict:
         pl.append([p["name"], f'=COUNTIF(Articles!$H$2:$H${n},"*"&A{rr}&"*")'])
     _style_summary(pl, [24, 12])
 
+    n_papers = _papers_sheet(db, cfg, wb, out_dir)
+
     wb.calculation.fullCalcOnLoad = True
     wb.save(out_dir / "articles.xlsx")
-    return {"articles": len(rows), "new_today": len(todays), "new_week": len(recent)}
+    return {"articles": len(rows), "new_today": len(todays), "new_week": len(recent),
+            "papers": n_papers}
+
+
+PAPER_COLUMNS = [
+    ("No", 6), ("Year", 7), ("Date", 12), ("Title", 60), ("Authors", 34), ("Journal / venue", 30),
+    ("Keyword group (Tamil)", 22), ("Keyword group (English)", 26), ("Matched terms", 28),
+    ("Places mentioned", 22), ("Language", 12), ("Link", 50), ("Free full text", 45), ("DOI", 26),
+    ("Abstract (start)", 70), ("Found via", 22), ("Found on", 12),
+]
+
+
+def _papers_sheet(db: DB, cfg: Config, wb: Workbook, out_dir: Path) -> int:
+    """Research papers: own sheet in the Excel file and data/papers.csv."""
+    labels = {g.key: (g.label_ta, g.label_en) for g in cfg.groups}
+    rows = []
+    for i, p in enumerate(db.conn.execute(
+            "SELECT * FROM papers ORDER BY COALESCE(year,0) DESC, title").fetchall(), 1):
+        groups = json.loads(p["groups"] or "[]")
+        rows.append([
+            i, p["year"] or "", p["pub_date"] or "", p["title"] or "", p["authors"] or "",
+            p["venue"] or "",
+            ", ".join(labels.get(g, (g, g))[0] for g in groups),
+            ", ".join(labels.get(g, (g, g))[1] for g in groups),
+            ", ".join(json.loads(p["matched_terms"] or "[]")),
+            ", ".join(json.loads(p["places"] or "[]")),
+            p["language"] or "", p["url"] or "", p["oa_url"] or "",
+            p["doi"] or "", p["abstract"] or "", p["source"] or "", (p["found_at"] or "")[:10],
+        ])
+    header = [c for c, _ in PAPER_COLUMNS]
+    with open(out_dir / "papers.csv", "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f)
+        w.writerow(header)
+        w.writerows(rows)
+    ws = wb.create_sheet("Research papers", 1)
+    ws.append(header)
+    for c in ws[1]:
+        c.fill, c.font = HEAD_FILL, HEAD_FONT
+        c.alignment = Alignment(wrap_text=True, vertical="center")
+    for r in rows:
+        ws.append(r)
+        rn = ws.max_row
+        for c in ws[rn]:
+            c.font = BODY_FONT
+            c.alignment = Alignment(vertical="top", wrap_text=c.column in (4, 15))
+        for col in (12, 13):
+            cell = ws.cell(row=rn, column=col)
+            if cell.value and str(cell.value).startswith("http") and len(str(cell.value)) < 2000:
+                cell.hyperlink = str(cell.value)
+                cell.font = LINK_FONT
+    for i, (_, wdt) in enumerate(PAPER_COLUMNS, 1):
+        ws.column_dimensions[get_column_letter(i)].width = wdt
+    ws.freeze_panes = "A2"
+    ws.auto_filter.ref = f"A1:{get_column_letter(len(PAPER_COLUMNS))}{max(ws.max_row, 2)}"
+    return len(rows)
 
 
 def _fill_sheet(ws, header, rows) -> None:

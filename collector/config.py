@@ -34,6 +34,9 @@ class Config:
     date_archives: list[dict]
     tld_country: dict
     places: list[dict]
+    paper_queries: list[str] = field(default_factory=list)
+    papers_from_year: int = 2005
+    journals: list[dict] = field(default_factory=list)
     domain_info: dict = field(default_factory=dict)
 
 
@@ -71,6 +74,9 @@ def load_config() -> Config:
         search_queries_ta=sq.get("ta") or [],
         url_slug_terms=slug_terms,
         url_slug_terms_specific=list(kw.get("url_slug_terms_specific") or []),
+        paper_queries=list(kw.get("paper_queries") or []),
+        papers_from_year=int((src.get("papers") or {}).get("from_year", 2005)),
+        journals=list((src.get("papers") or {}).get("journals") or []),
         wayback=wayback,
         date_archives=src.get("date_archives") or [],
         tld_country=src.get("tld_country") or {},
