@@ -1,15 +1,15 @@
-Last updated: 2026-10-17 05:22 UTC
-new articles today: 1446   |   last 7 days: 4826   |   research papers: 757
-articles kept: 7261
-urls checked: 8955 of 8955 (rejected 1501, unreachable 195, waiting 0)
-wayback: job 436/473 (theprint.in); links found so far 62418; jobs skipped 66; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
+Last updated: 2026-10-18 05:19 UTC
+new articles today: 312   |   last 7 days: 2189   |   research papers: 757
+articles kept: 7573
+urls checked: 9498 of 9498 (rejected 1692, unreachable 235, waiting 0)
+wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 4/57 (inscription Tamil Nadu), month 99
+gdelt: query 5/57 (Chola inscription), month 32
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
-      47  live HTTP 404; archive HTTP 404
-      35  live HTTP 403; archive had no article text
-      20  live HTTP 406; archive HTTP 404
-      19  live HTTP 403; archive HTTP 404
-      16  live HTTP 404; archive had no article text
+      48  live HTTP 404; archive HTTP 404
+      36  live HTTP 403; archive had no article text
+      23  live HTTP 404; archive had no article text
+      23  live HTTP 404; archive HTTP 403
+      22  live HTTP 403; archive HTTP 404
