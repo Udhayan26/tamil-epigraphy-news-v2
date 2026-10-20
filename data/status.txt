@@ -1,15 +1,15 @@
-Last updated: 2026-10-19 05:27 UTC
-new articles today: 248   |   last 7 days: 2361   |   research papers: 757
-articles kept: 7821
-urls checked: 9813 of 9813 (rejected 1746, unreachable 248, waiting 0)
+Last updated: 2026-10-20 05:52 UTC
+new articles today: 66   |   last 7 days: 2399   |   research papers: 757
+articles kept: 7887
+urls checked: 9919 of 9919 (rejected 1768, unreachable 266, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 6/57 (Pandya inscription), month 87
+gdelt: query 8/57 (Vatteluttu), month 24
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
-      50  live HTTP 404; archive HTTP 404
+      61  live HTTP 404; archive HTTP 404
       36  live HTTP 403; archive had no article text
       26  live HTTP 404; archive HTTP 403
-      24  live HTTP 403; archive HTTP 404
+      26  live HTTP 403; archive HTTP 404
       23  live HTTP 404; archive had no article text
