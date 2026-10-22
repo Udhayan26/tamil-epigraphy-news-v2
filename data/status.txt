@@ -1,10 +1,10 @@
-Last updated: 2026-10-21 05:48 UTC
-new articles today: 54   |   last 7 days: 2451   |   research papers: 757
-articles kept: 7941
-urls checked: 9983 of 9983 (rejected 1773, unreachable 271, waiting 0)
+Last updated: 2026-10-22 05:38 UTC
+new articles today: 80   |   last 7 days: 2525   |   research papers: 757
+articles kept: 8021
+urls checked: 10079 of 10079 (rejected 1789, unreachable 271, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 9/57 ("copper plates" Tamil), month 62
+gdelt: query 10/57 ("rock art" Tamil Nadu), month 103
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
