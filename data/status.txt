@@ -1,15 +1,15 @@
-Last updated: 2026-10-22 05:38 UTC
-new articles today: 80   |   last 7 days: 2525   |   research papers: 757
-articles kept: 8021
-urls checked: 10079 of 10079 (rejected 1789, unreachable 271, waiting 0)
+Last updated: 2026-10-23 05:45 UTC
+new articles today: 34   |   last 7 days: 2557   |   research papers: 757
+articles kept: 8055
+urls checked: 10120 of 10120 (rejected 1793, unreachable 274, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 10/57 ("rock art" Tamil Nadu), month 103
+gdelt: query 12/57 (Keeladi), month 9
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
-      63  live HTTP 404; archive HTTP 404
+      64  live HTTP 404; archive HTTP 404
       36  live HTTP 403; archive had no article text
       29  live HTTP 403; archive HTTP 404
-      26  live HTTP 404; archive HTTP 403
+      28  live HTTP 404; archive HTTP 403
       23  live HTTP 404; archive had no article text
