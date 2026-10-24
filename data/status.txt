@@ -1,15 +1,15 @@
-Last updated: 2026-10-23 05:45 UTC
-new articles today: 34   |   last 7 days: 2557   |   research papers: 757
-articles kept: 8055
-urls checked: 10120 of 10120 (rejected 1793, unreachable 274, waiting 0)
+Last updated: 2026-10-24 05:46 UTC
+new articles today: 323   |   last 7 days: 2563   |   research papers: 757
+articles kept: 8378
+urls checked: 10477 of 10477 (rejected 1820, unreachable 281, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 12/57 (Keeladi), month 9
+gdelt: query 13/57 (Adichanallur), month 35
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
-      64  live HTTP 404; archive HTTP 404
+      68  live HTTP 404; archive HTTP 404
       36  live HTTP 403; archive had no article text
-      29  live HTTP 403; archive HTTP 404
+      30  live HTTP 403; archive HTTP 404
       28  live HTTP 404; archive HTTP 403
       23  live HTTP 404; archive had no article text
