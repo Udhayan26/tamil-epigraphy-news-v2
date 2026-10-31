@@ -1,14 +1,14 @@
-Last updated: 2026-10-30 06:43 UTC
-new articles today: 22   |   last 7 days: 829   |   research papers: 757
-articles kept: 8850
-urls checked: 11228 of 11228 (rejected 2041, unreachable 339, waiting 0)
+Last updated: 2026-10-31 06:31 UTC
+new articles today: 7   |   last 7 days: 802   |   research papers: 757
+articles kept: 8857
+urls checked: 11241 of 11241 (rejected 2046, unreachable 340, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 21/57 (Tamil inscription Indonesia), month 3
+gdelt: query 22/57 (Tamil inscription Malaysia Bujang), month 43
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
-      80  live HTTP 404; archive HTTP 404
+      81  live HTTP 404; archive HTTP 404
       48  live HTTP 403; archive HTTP 404
       38  live HTTP 403; archive had no article text
       30  live HTTP 404; archive HTTP 403
