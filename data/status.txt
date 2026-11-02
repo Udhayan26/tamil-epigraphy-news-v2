@@ -1,15 +1,15 @@
-Last updated: 2026-11-01 06:21 UTC
-new articles today: 4   |   last 7 days: 483   |   research papers: 757
-articles kept: 8861
-urls checked: 11248 of 11248 (rejected 2047, unreachable 342, waiting 0)
+Last updated: 2026-11-02 06:47 UTC
+new articles today: 9   |   last 7 days: 288   |   research papers: 757
+articles kept: 8870
+urls checked: 16221 of 16221 (rejected 6487, unreachable 866, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 23/57 (Tamil inscription Vietnam), month 100
+gdelt: query 24/57 (hero stone discovered), month 28
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
-      81  live HTTP 404; archive HTTP 404
-      50  live HTTP 403; archive HTTP 404
-      38  live HTTP 403; archive had no article text
-      30  live HTTP 404; archive HTTP 403
-      29  live HTTP 404; archive had no article text
+     209  live HTTP 404; archive HTTP 404
+     115  live HTTP 403; archive HTTP 404
+      82  live HTTP 403; archive had no article text
+      39  live HTTP 404; archive HTTP 403
+      39  live HTTP 402; archive HTTP 404
