@@ -1,15 +1,15 @@
-Last updated: 2026-11-02 06:47 UTC
-new articles today: 9   |   last 7 days: 288   |   research papers: 757
-articles kept: 8870
-urls checked: 16221 of 16221 (rejected 6487, unreachable 866, waiting 0)
+Last updated: 2026-11-03 08:01 UTC
+new articles today: 28   |   last 7 days: 228   |   research papers: 757
+articles kept: 8898
+urls checked: 23174 of 23174 (rejected 12952, unreachable 1326, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 24/57 (hero stone discovered), month 28
+gdelt: query 24/57 (hero stone discovered), month 64
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
-     209  live HTTP 404; archive HTTP 404
-     115  live HTTP 403; archive HTTP 404
-      82  live HTTP 403; archive had no article text
-      39  live HTTP 404; archive HTTP 403
-      39  live HTTP 402; archive HTTP 404
+     275  live HTTP 404; archive HTTP 404
+     183  live HTTP 403; archive HTTP 404
+     104  live HTTP 403; archive had no article text
+      81  live page had no article text; archive had no article text
+      75  live HTTP 403; archive HTTP 403
