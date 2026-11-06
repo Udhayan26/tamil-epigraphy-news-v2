@@ -1,10 +1,10 @@
-Last updated: 2026-11-05 07:31 UTC
-new articles today: 6   |   last 7 days: 115   |   research papers: 757
-articles kept: 8936
-urls checked: 28712 of 28712 (rejected 18032, unreachable 1746, waiting 0)
+Last updated: 2026-11-06 07:27 UTC
+new articles today: 2   |   last 7 days: 110   |   research papers: 757
+articles kept: 8938
+urls checked: 28714 of 28714 (rejected 18032, unreachable 1746, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 26/57 (memorial stone inscription Tamil), month 59
+gdelt: query 27/57 (Vijayanagara inscription Tamil Nadu), month 95
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
