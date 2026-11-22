@@ -1,10 +1,10 @@
-Last updated: 2026-11-21 08:05 UTC
-new articles today: 0   |   last 7 days: 33   |   research papers: 757
-articles kept: 9007
-urls checked: 28791 of 28791 (rejected 18040, unreachable 1746, waiting 0)
+Last updated: 2026-11-22 07:15 UTC
+new articles today: 11   |   last 7 days: 43   |   research papers: 757
+articles kept: 9018
+urls checked: 28803 of 28803 (rejected 18041, unreachable 1746, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 47/57 (பாறை ஓவியம் கண்டெடுப்பு), month 74
+gdelt: query 48/57 (குகை ஓவியங்கள்), month 106
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
