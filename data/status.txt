@@ -1,10 +1,10 @@
-Last updated: 2026-11-26 09:13 UTC
-new articles today: 4   |   last 7 days: 38   |   research papers: 757
-articles kept: 9036
-urls checked: 28823 of 28823 (rejected 18043, unreachable 1746, waiting 0)
+Last updated: 2026-11-27 09:07 UTC
+new articles today: 3   |   last 7 days: 34   |   research papers: 757
+articles kept: 9039
+urls checked: 28827 of 28827 (rejected 18044, unreachable 1746, waiting 0)
 wayback: done (473 jobs); links found so far 62770; jobs skipped 82; top: archaeology.org 52747, timesofindia.indiatimes.com 1397, hindutamil.in 1262, thehindu.com 1197, newindianexpress.com 670, dinamani.com 638
 archives: The Hindu print archive: next 2006-03-02
-gdelt: query 54/57 (சமணப் படுக்கை கல்வெட்டு), month 42
+gdelt: query 55/57 (பழமையான சிற்பம் கண்டெடுப்பு), month 81
 research papers kept: 757 (OpenAlex history done; journals: 3)
 
 Most common reasons pages could not be opened:
